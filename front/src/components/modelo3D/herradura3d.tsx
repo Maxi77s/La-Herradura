@@ -7,7 +7,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 const ThreeModel: React.FC = () => {
   const sceneRef = useRef<HTMLDivElement>(null);
   const [isOverModel, setIsOverModel] = useState(false);
-  const glbPath = "/herraduradefinitiva3.glb"; // Asegúrate de que esta ruta sea correcta para el modelo GLB
+  const glbPath = "/herradura.glb"; // Asegúrate de que esta ruta sea correcta para el modelo GLB
 
   useEffect(() => {
     if (!sceneRef.current) return;
