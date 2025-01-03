@@ -73,8 +73,35 @@ const ThreeModel: React.FC = () => {
     // Variables para la rotación
     let isMouseDown = false;
     let previousMouseX = 0;
+    let previousTouchX = 0;
 
-    // Eventos de interacción
+    // Función para manejar el movimiento táctil
+    const onTouchStart = (event: TouchEvent) => {
+      if (event.touches.length === 1) { // Asegúrate de que haya un solo dedo
+        isMouseDown = true;
+        previousTouchX = event.touches[0].clientX;
+      }
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      if (event.touches.length === 1) {
+        const touchX = event.touches[0].clientX;
+        const deltaX = touchX - previousTouchX;
+        scene.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            child.rotation.y += deltaX * 0.005; // Rotar el modelo
+          }
+        });
+        previousTouchX = touchX;
+        event.preventDefault(); // Evitar el desplazamiento de la página
+      }
+    };
+
+    const onTouchEnd = () => {
+      isMouseDown = false;
+    };
+
+    // Eventos de interacción con el mouse
     const onMouseDown = (event: MouseEvent) => {
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(scene.children);
@@ -115,10 +142,15 @@ const ThreeModel: React.FC = () => {
       renderer.setSize(width, height);
     };
 
+    // Agregar los eventos de mouse y táctil
     window.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
     window.addEventListener("resize", onWindowResize);
+
+    window.addEventListener("touchstart", onTouchStart, { passive: false });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onTouchEnd);
 
     // Animación
     const animate = () => {
@@ -140,6 +172,9 @@ const ThreeModel: React.FC = () => {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
       window.removeEventListener("resize", onWindowResize);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
       renderer.dispose();
     };
   }, []);
