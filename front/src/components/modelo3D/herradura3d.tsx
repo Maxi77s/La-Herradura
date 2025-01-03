@@ -7,7 +7,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 const ThreeModel: React.FC = () => {
   const sceneRef = useRef<HTMLDivElement>(null);
   const [isOverModel, setIsOverModel] = useState(false);
-  const glbPath = "/herradura.glb"; // Asegúrate de que esta ruta sea correcta para el modelo GLB
+  const glbPath = "/herradura.glb"; // Asegúrate de que esta ruta sea correcta
 
   useEffect(() => {
     if (!sceneRef.current) return;
@@ -22,7 +22,7 @@ const ThreeModel: React.FC = () => {
     );
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0x000000, 0);
+    renderer.setClearColor(0x000000, 0); // Fondo transparente
     sceneRef.current.appendChild(renderer.domElement);
 
     // Añadir luces
@@ -39,22 +39,23 @@ const ThreeModel: React.FC = () => {
 
     // Configurar DRACOLoader y GLTFLoader
     const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
-    const loader = new GLTFLoader();
+    dracoLoader.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/"); // Ruta al decodificador DRACO
+
+    const loader = new GLTFLoader(); // Uso de GLTFLoader
     loader.setDRACOLoader(dracoLoader);
 
     // Cargar el modelo GLB
     loader.load(
       glbPath,
       (gltf) => {
-        gltf.scene.scale.set(0.20, 0.20, 0.20);
-        gltf.scene.position.set(0, 1, 0);
+        gltf.scene.scale.set(0.2, 0.2, 0.2); // Ajustar el tamaño del modelo
+        gltf.scene.position.set(0, 1, 0); // Ajustar la posición del modelo
         scene.add(gltf.scene);
 
         gltf.scene.traverse((child) => {
-          if (child.isMesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
+          if ((child as THREE.Mesh).isMesh) {
+            (child as THREE.Mesh).castShadow = true;
+            (child as THREE.Mesh).receiveShadow = true;
           }
         });
       },
@@ -75,7 +76,6 @@ const ThreeModel: React.FC = () => {
 
     // Eventos de interacción
     const onMouseDown = (event: MouseEvent) => {
-      // Verificar si el clic inicial ocurre sobre el modelo
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(scene.children);
       if (intersects.length > 0 && event.button === 0) {
@@ -94,10 +94,9 @@ const ThreeModel: React.FC = () => {
 
       if (isMouseDown) {
         const deltaX = event.clientX - previousMouseX;
-        // Girar el modelo basado en el movimiento horizontal del mouse
         scene.traverse((child) => {
-          if (child.isMesh) {
-            child.rotation.y += deltaX * 0.005;
+          if (child instanceof THREE.Mesh) {
+            child.rotation.y += deltaX * 0.005; // Rotar el modelo
           }
         });
         previousMouseX = event.clientX;
@@ -126,8 +125,8 @@ const ThreeModel: React.FC = () => {
       requestAnimationFrame(animate);
       if (!isMouseDown) {
         scene.traverse((child) => {
-          if (child.isMesh) {
-            child.rotation.y += 0.01;
+          if ((child as THREE.Mesh).isMesh) {
+            (child as THREE.Mesh).rotation.y += 0.01; // Animación constante del modelo
           }
         });
       }
@@ -152,11 +151,10 @@ const ThreeModel: React.FC = () => {
   return (
     <div
       className="relative min-h-screen bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: 'url("/FondoHerradura.webp")' }} // Asegúrate de que esta ruta sea correcta para la imagen
+      style={{ backgroundImage: 'url("/FondoHerradura.webp")' }} // Fondo del contenedor
     >
       <div className="absolute inset-0 z-0"></div>
       <div ref={sceneRef} className="w-full h-full overflow-hidden absolute inset-0 z-10"></div>
-
     </div>
   );
 };
