@@ -108,9 +108,10 @@ const ThreeModel: React.FC = () => {
       }
     };
 
-  const onTouchEnd = () => {
-  isMouseDown = false;
-};
+    const onTouchEnd = () => {
+      isMouseDown = false;
+    };
+
     // Eventos de interacción con el mouse
     const onMouseDown = (event: MouseEvent) => {
       raycaster.setFromCamera(mouse, camera);
