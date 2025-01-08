@@ -77,30 +77,40 @@ const ThreeModel: React.FC = () => {
 
     // Función para manejar el movimiento táctil
     const onTouchStart = (event: TouchEvent) => {
-      if (event.touches.length === 1) { // Asegúrate de que haya un solo dedo
-        isMouseDown = true;
-        previousTouchX = event.touches[0].clientX;
+      if (event.touches.length === 1) {
+        const touch = event.touches[0];
+        mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+    
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(scene.children);
+    
+        if (intersects.length > 0) {
+          isMouseDown = true;
+          previousTouchX = touch.clientX;
+          event.preventDefault(); // Solo prevenir el scroll si el toque está sobre el modelo
+        }
       }
     };
-
     const onTouchMove = (event: TouchEvent) => {
-      if (event.touches.length === 1) {
-        const touchX = event.touches[0].clientX;
-        const deltaX = touchX - previousTouchX;
+      if (isMouseDown && event.touches.length === 1) {
+        const touch = event.touches[0];
+        const deltaX = touch.clientX - previousTouchX;
+    
         scene.traverse((child) => {
           if (child instanceof THREE.Mesh) {
             child.rotation.y += deltaX * 0.005; // Rotar el modelo
           }
         });
-        previousTouchX = touchX;
-        event.preventDefault(); // Evitar el desplazamiento de la página
+    
+        previousTouchX = touch.clientX;
+        event.preventDefault(); // Evitar el desplazamiento de la página solo si se interactúa con el modelo
       }
     };
 
-    const onTouchEnd = () => {
-      isMouseDown = false;
-    };
-
+  const onTouchEnd = () => {
+  isMouseDown = false;
+};
     // Eventos de interacción con el mouse
     const onMouseDown = (event: MouseEvent) => {
       raycaster.setFromCamera(mouse, camera);
