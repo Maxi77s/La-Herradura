@@ -49,7 +49,7 @@ const ThreeModel: React.FC = () => {
       glbPath,
       (gltf) => {
         gltf.scene.scale.set(0.2, 0.2, 0.2); // Ajustar el tamaño del modelo
-        gltf.scene.position.set(0, 1, 0); // Ajustar la posición del modelo
+        gltf.scene.position.set(0, 0.8, 0); // Ajustar la posición del modelo
         scene.add(gltf.scene);
 
         gltf.scene.traverse((child) => {
