@@ -91,7 +91,7 @@ const ServiceCarousel: React.FC = () => {
         className="transform scale-90 sm:scale-75 origin-center"
         style={{ maxWidth: "85%", overflow: "hidden" }}
       >
-        <h2 className="text-3xl md:text-4xl font-semibold text-center text-white mb-6">
+        <h2 className="text-3xl md:text-4xl text-center text-white mb-6 ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji' 	, 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji' ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji">
           Nuestros Servicios
         </h2>
         <div className="min-h-[450px] md:min-h-[650px] relative ">

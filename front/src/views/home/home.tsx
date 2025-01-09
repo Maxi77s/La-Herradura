@@ -1,6 +1,6 @@
 import ThreeModel from "../../components/modelo3D/herradura3d";
 import Section1 from "../section1/seccion1";
-
+import Nosotros from "@/components/Nosotros/inicio";
 const Home = () => {
   return (
     <div className="relative min-h-screen">
@@ -10,6 +10,7 @@ const Home = () => {
       {/* Contenedor del Modelo 3D */}
       <div className="w-full h-full relative z-1">
         <ThreeModel />
+        <Nosotros/>
         <Section1 />
       </div>
     </div>
