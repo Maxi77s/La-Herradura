@@ -1,6 +1,7 @@
+import Nosotros from "@/components/Nosotros/inicio";
 import ThreeModel from "../../components/modelo3D/herradura3d";
 import Section1 from "../section1/seccion1";
-import Nosotros from "@/components/Nosotros/inicio";
+import StatisticsSection from "../StatisticsSection/StatisticsSection";
 const Home = () => {
   return (
     <div className="relative min-h-screen">
@@ -11,6 +12,7 @@ const Home = () => {
       <div className="w-full h-full relative z-1">
         <ThreeModel />
         <Nosotros/>
+        <StatisticsSection/>
         <Section1 />
       </div>
     </div>

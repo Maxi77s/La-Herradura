@@ -9,7 +9,7 @@ const Inicio = () => {
       </div>
 
       {/* Sección 1: Texto a la izquierda, Imagen a la derecha */}
-      <div className="flex flex-col md:flex-row items-center justify-center py-14 md:py-28 px-6 md:px-40 mt-[-10px]">
+      <div className="flex flex-col md:flex-row items-center justify-center py-14 md:py-28 px-6 md:px-40 mt-[-150px]">
         <div className="md:w-2/5 text-center md:text-left space-y-4">
           <h2 className="text-black text-xl md:text-2xl font-bold">Nosotros</h2>
           <p className="text-black text-sm md:text-base">

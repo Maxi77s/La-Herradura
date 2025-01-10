@@ -1,10 +1,10 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false); // Estado para el menú hamburguesa
   const [isServicesOpen, setIsServicesOpen] = useState(false); // Estado para el submenú
-  const servicesRef = useRef<HTMLDivElement>(null); // Referencia para detectar clics fuera del submenú
+  const [hasScrolled, setHasScrolled] = useState(false); // Estado para detectar el scroll
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -14,31 +14,30 @@ const Navbar: React.FC = () => {
     setIsServicesOpen(!isServicesOpen);
   };
 
-  // Cierra el submenú al hacer clic fuera o presionar Escape
+  // Detecta el scroll y cambia el estado de hasScrolled
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (servicesRef.current && !servicesRef.current.contains(event.target as Node)) {
-        setIsServicesOpen(false); // Cierra el submenú
+    const handleScroll = () => {
+      if (window.scrollY > 150) { // Cambiar a 150px
+        setHasScrolled(true);
+      } else {
+        setHasScrolled(false);
       }
     };
 
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsServicesOpen(false); // Cierra el submenú
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleEscape);
+    window.addEventListener("scroll", handleScroll);
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleEscape);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
   return (
-    <nav className="bg-black bg-opacity-30 backdrop-blur-md fixed top-0 left-0 z-50 w-full">
+    <nav
+      className={`${
+        // Si el menú está abierto, quitamos la opacidad, sino la mantenemos
+        isMenuOpen ? "bg-black" : hasScrolled ? "bg-black bg-opacity-50 backdrop-blur-md" : "bg-transparent"
+      } fixed top-0 left-0 z-50 w-full transition-all duration-500 ease-in-out`} // Transición suave para los cambios
+    >
       <div className="px-4 py-1 flex justify-between items-center">
         {/* Contenedor del Logo y el Menú */}
         <div className="flex items-center w-full justify-between">
@@ -57,7 +56,7 @@ const Navbar: React.FC = () => {
               </span>
 
               {/* Servicios con Submenú */}
-              <div className="relative" ref={servicesRef}>
+              <div className="relative">
                 <div
                   className="flex items-center cursor-pointer"
                   onClick={toggleServices}
@@ -65,47 +64,7 @@ const Navbar: React.FC = () => {
                   <span className="text-white font-light text-lg transition-all duration-300 transform hover:scale-110 hover:text-gray-400">
                     Servicios
                   </span>
-                  {/* Ícono de desplegar */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    className="w-5 h-5 ml-2 text-white transition-transform duration-300 transform"
-                    style={{
-                      transform: isServicesOpen
-                        ? "rotate(180deg)"
-                        : "rotate(0)",
-                    }}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
                 </div>
-
-                {/* Submenú transparente */}
-                {isServicesOpen && (
-                  <div className="absolute mt-2 bg-black bg-opacity-50 backdrop-blur-md text-white rounded shadow-lg w-48 z-50">
-                    <ul className="py-2">
-                      <li className="px-4 py-2 text-color hover:bg-gray-700 cursor-pointer">
-                        Servicio de catering
-                      </li>
-                      <li className="px-4 py-2 hover:bg-gray-700 cursor-pointer">
-                        Servicio del salón
-                      </li>
-                      <li className="px-4 py-2 hover:bg-gray-700 cursor-pointer">
-                        Servicio de coctelería
-                      </li>
-                      <li className="px-4 py-2 hover:bg-gray-700 cursor-pointer">
-                        Servicios adicionales
-                      </li>
-                    </ul>
-                  </div>
-                )}
               </div>
 
               <span className="text-white font-light text-lg cursor-pointer transition-all duration-300 transform hover:scale-110 hover:text-gray-400">
@@ -136,89 +95,53 @@ const Navbar: React.FC = () => {
 
       {/* Fondo cristalino cuando el menú hamburguesa está abierto */}
       {isMenuOpen && (
-  <>
-    {/* Capa oscura con efecto de transparencia */}
-    <div
-      className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-md z-40"
-      onClick={toggleMenu}
-    ></div>
+        <>
+          {/* Capa oscura con efecto de transparencia sobre toda la pantalla */}
+          <div
+            className={`fixed inset-0 bg-black bg-opacity-70 backdrop-blur-md z-40`} // Fondo oscuro y opaco
+            onClick={toggleMenu}
+          ></div>
 
-    {/* Menú desplegable para pantallas pequeñas */}
-    <div className="md:hidden flex flex-col items-center justify-center space-y-6 z-50 fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-30 backdrop-blur-md text-white py-6 h-screen">
-      <div
-        className="absolute top-4 right-4 cursor-pointer"
-        onClick={toggleMenu}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          className="w-8 h-8 text-white"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      </div>
+          {/* Menú desplegable para pantallas pequeñas */}
+          <div className="md:hidden flex flex-col items-center justify-center space-y-6 z-50 fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-70 backdrop-blur-md text-white py-6 h-screen">
+            <div
+              className="absolute top-4 right-4 cursor-pointer"
+              onClick={toggleMenu}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                className="w-8 h-8 text-white"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </div>
 
-      {/* Opciones del menú */}
-      <span className="font-light text-lg cursor-pointer transition-all duration-300 transform hover:scale-110 hover:text-gray-400">
-        Inicio
-      </span>
-      <div className="relative w-full text-center">
-        <div
-          className="flex items-center justify-center cursor-pointer"
-          onClick={toggleServices}
-        >
-          <span className="font-light text-lg transition-all duration-300 transform hover:scale-110 hover:text-gray-400">
-            Servicios
-          </span>
-          {/* Ícono de desplegar */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            className="w-5 h-5 ml-2 text-white transition-transform duration-300 transform"
-            style={{
-              transform: isServicesOpen ? "rotate(180deg)" : "rotate(0)",
-            }}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </div>
-        {isServicesOpen && (
-          <div className="mt-2 bg-black bg-opacity-50 backdrop-blur-md text-white rounded shadow-lg w-48 mx-auto">
-            <ul className="py-2">
-              <li className="px-4 py-2 hover:bg-gray-700 cursor-pointer">
-                Servicio de catering
-              </li>
-              <li className="px-4 py-2 hover:bg-gray-700 cursor-pointer">
-                Servicio del salón
-              </li>
-              <li className="px-4 py-2 hover:bg-gray-700 cursor-pointer">
-                Servicio de coctelería
-              </li>
-              <li className="px-4 py-2 hover:bg-gray-700 cursor-pointer">
-                Servicios adicionales
-              </li>
-            </ul>
+            {/* Opciones del menú */}
+            <span className="font-light text-lg cursor-pointer transition-all duration-300 transform hover:scale-110 hover:text-gray-400">
+              Inicio
+            </span>
+            <div className="relative w-full text-center">
+              <div
+                className="flex items-center justify-center cursor-pointer"
+                onClick={toggleServices}
+              >
+                <span className="font-light text-lg transition-all duration-300 transform hover:scale-110 hover:text-gray-400">
+                  Servicios
+                </span>
+              </div>
+            </div>
+            <span className="font-light text-lg cursor-pointer transition-all duration-300 transform hover:scale-110 hover:text-gray-400">
+              Contacto
+            </span>
           </div>
-        )}
-      </div>
-      <span className="font-light text-lg cursor-pointer transition-all duration-300 transform hover:scale-110 hover:text-gray-400">
-        Contacto
-      </span>
-    </div>
         </>
       )}
     </nav>
