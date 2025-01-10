@@ -98,15 +98,16 @@ const ThreeModel: React.FC = () => {
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
-    let isMouseDown = false;
-    let previousMouseX = 0;
+    let isInteracting = false;
+    let previousInteractionX = 0;
 
+    // Mouse interaction
     const onMouseDown = (event: MouseEvent) => {
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(scene.children);
       if (intersects.length > 0 && event.button === 0) {
-        isMouseDown = true;
-        previousMouseX = event.clientX;
+        isInteracting = true;
+        previousInteractionX = event.clientX;
       }
     };
 
@@ -118,19 +119,49 @@ const ThreeModel: React.FC = () => {
       const intersects = raycaster.intersectObjects(scene.children);
       setIsOverModel(intersects.length > 0);
 
-      if (isMouseDown) {
-        const deltaX = event.clientX - previousMouseX;
+      if (isInteracting) {
+        const deltaX = event.clientX - previousInteractionX;
         scene.traverse((child) => {
           if (child instanceof THREE.Mesh) {
             child.rotation.y += deltaX * 0.005;
           }
         });
-        previousMouseX = event.clientX;
+        previousInteractionX = event.clientX;
       }
     };
 
     const onMouseUp = () => {
-      isMouseDown = false;
+      isInteracting = false;
+    };
+
+    // Touch interaction
+    const onTouchStart = (event: TouchEvent) => {
+      if (event.touches.length === 1) {
+        const touch = event.touches[0];
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(scene.children);
+        if (intersects.length > 0) {
+          isInteracting = true;
+          previousInteractionX = touch.clientX;
+        }
+      }
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      if (isInteracting && event.touches.length === 1) {
+        const touch = event.touches[0];
+        const deltaX = touch.clientX - previousInteractionX;
+        scene.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            child.rotation.y += deltaX * 0.005;
+          }
+        });
+        previousInteractionX = touch.clientX;
+      }
+    };
+
+    const onTouchEnd = () => {
+      isInteracting = false;
     };
 
     const onWindowResize = () => {
@@ -144,11 +175,14 @@ const ThreeModel: React.FC = () => {
     window.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
+    window.addEventListener("touchstart", onTouchStart);
+    window.addEventListener("touchmove", onTouchMove);
+    window.addEventListener("touchend", onTouchEnd);
     window.addEventListener("resize", onWindowResize);
 
     const animate = () => {
       requestAnimationFrame(animate);
-      if (!isMouseDown) {
+      if (!isInteracting) {
         scene.traverse((child) => {
           if ((child as THREE.Mesh).isMesh) {
             (child as THREE.Mesh).rotation.y += 0.01;
@@ -163,6 +197,9 @@ const ThreeModel: React.FC = () => {
       window.removeEventListener("mousedown", onMouseDown);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("resize", onWindowResize);
       renderer.dispose();
     };
@@ -179,7 +216,6 @@ const ThreeModel: React.FC = () => {
     const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank");
   };
-  
 
   return (
     <div
@@ -189,7 +225,7 @@ const ThreeModel: React.FC = () => {
       <div className="absolute inset-0 z-0"></div>
       <div
         ref={sceneRef}
-        className="w-full h-full overflow-hidden absolute inset-0 z-10"
+        className="w-full h-[80vh] overflow-hidden absolute inset-0 z-10"
       ></div>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
