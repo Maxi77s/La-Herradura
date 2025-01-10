@@ -44,9 +44,9 @@ const Navbar: React.FC = () => {
           {/* Icono a la izquierda */}
           <div className="flex items-center space-x-6 w-auto h-auto">
             <img
-              src="/iconoHerradura.png"
+              src="/image/LAHERRADURA.png"
               alt="Icon"
-              className="w-48 h-auto object-contain"
+              className="w-24 h-auto object-contain"
             />
 
             {/* Menú de navegación en pantallas grandes */}
