@@ -69,7 +69,7 @@ const ServiceCarousel: React.FC = () => {
       <div
         style={{
           position: "relative",
-          bottom: "-10px",
+          bottom: "-7px",
           display: "flex",
           justifyContent: "center",
           width: "100%",
