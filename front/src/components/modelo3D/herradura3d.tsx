@@ -236,7 +236,7 @@ const ThreeModel: React.FC = () => {
             ? isMobile
               ? "fixed bottom-4 right-4 z-50" // Mobile position
               : "fixed top-7 right-4 z-50" // Desktop position
-            : "absolute bottom-10 flex justify-center w-full z-20" // Initial position
+            : "absolute bottom-36 flex justify-center w-full z-20" // Initial position
         } text-center`}
       >
         <motion.button
