@@ -112,6 +112,29 @@ const ThreeModel: React.FC = () => {
       isMouseDown = false;
     };
 
+    // Soporte táctil
+    const onTouchStart = (event: TouchEvent) => {
+      if (event.touches.length === 1) {
+        previousTouchX = event.touches[0].clientX;
+      }
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      if (event.touches.length === 1) {
+        const deltaX = event.touches[0].clientX - previousTouchX;
+        scene.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            child.rotation.y += deltaX * 0.005; // Rotar el modelo
+          }
+        });
+        previousTouchX = event.touches[0].clientX;
+      }
+    };
+
+    const onTouchEnd = () => {
+      previousTouchX = 0;
+    };
+
     const onWindowResize = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
@@ -124,6 +147,9 @@ const ThreeModel: React.FC = () => {
     window.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
+    window.addEventListener("touchstart", onTouchStart);
+    window.addEventListener("touchmove", onTouchMove);
+    window.addEventListener("touchend", onTouchEnd);
     window.addEventListener("resize", onWindowResize);
 
     // Animación
@@ -145,6 +171,9 @@ const ThreeModel: React.FC = () => {
       window.removeEventListener("mousedown", onMouseDown);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("resize", onWindowResize);
       renderer.dispose();
     };
