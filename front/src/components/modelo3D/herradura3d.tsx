@@ -49,7 +49,11 @@ const ThreeModel: React.FC = () => {
       glbPath,
       (gltf) => {
         gltf.scene.scale.set(0.2, 0.2, 0.2); // Ajustar el tamaño del modelo
-        gltf.scene.position.set(0, 0.8, 0); // Ajustar la posición del modelo
+
+        // Centrar el modelo
+        const isMobile = window.innerWidth <= 768; // Detectar si es móvil
+        gltf.scene.position.set(0, isMobile ? 0.5 : 0.8, 0); // Ajustar posición según dispositivo
+
         scene.add(gltf.scene);
 
         gltf.scene.traverse((child) => {
@@ -75,44 +79,7 @@ const ThreeModel: React.FC = () => {
     let previousMouseX = 0;
     let previousTouchX = 0;
 
-    // Función para manejar el movimiento táctil
-    const onTouchStart = (event: TouchEvent) => {
-      if (event.touches.length === 1) {
-        const touch = event.touches[0];
-        mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
-    
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObjects(scene.children);
-    
-        if (intersects.length > 0) {
-          isMouseDown = true;
-          previousTouchX = touch.clientX;
-          event.preventDefault(); // Solo prevenir el scroll si el toque está sobre el modelo
-        }
-      }
-    };
-    const onTouchMove = (event: TouchEvent) => {
-      if (isMouseDown && event.touches.length === 1) {
-        const touch = event.touches[0];
-        const deltaX = touch.clientX - previousTouchX;
-    
-        scene.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            child.rotation.y += deltaX * 0.005; // Rotar el modelo
-          }
-        });
-    
-        previousTouchX = touch.clientX;
-        event.preventDefault(); // Evitar el desplazamiento de la página solo si se interactúa con el modelo
-      }
-    };
-
-    const onTouchEnd = () => {
-      isMouseDown = false;
-    };
-
-    // Eventos de interacción con el mouse
+    // Funciones de eventos (Mouse y táctil)
     const onMouseDown = (event: MouseEvent) => {
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(scene.children);
@@ -153,15 +120,11 @@ const ThreeModel: React.FC = () => {
       renderer.setSize(width, height);
     };
 
-    // Agregar los eventos de mouse y táctil
+    // Agregar eventos
     window.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
     window.addEventListener("resize", onWindowResize);
-
-    window.addEventListener("touchstart", onTouchStart, { passive: false });
-    window.addEventListener("touchmove", onTouchMove, { passive: false });
-    window.addEventListener("touchend", onTouchEnd);
 
     // Animación
     const animate = () => {
@@ -183,9 +146,6 @@ const ThreeModel: React.FC = () => {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
       window.removeEventListener("resize", onWindowResize);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("touchend", onTouchEnd);
       renderer.dispose();
     };
   }, []);
