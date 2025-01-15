@@ -28,7 +28,7 @@ const StatisticsSection: React.FC = () => {
                 <CountUp
                   start={0}
                   end={100}
-                  duration={3}
+                  duration={5}
                 />
                 <span className="text-indigo-600">+</span>
               </p>
@@ -43,7 +43,7 @@ const StatisticsSection: React.FC = () => {
                 <CountUp
                   start={0}
                   end={250}
-                  duration={3}
+                  duration={5}
                 />
                 <span className="text-green-600">+</span>
               </p>
@@ -57,8 +57,8 @@ const StatisticsSection: React.FC = () => {
               <p className="text-4xl font-extrabold text-gray-800">
                 <CountUp
                   start={0}
-                  end={10}
-                  duration={3}
+                  end={3}
+                  duration={5}
                 />
                 <span className="text-yellow-600">+</span>
               </p>
