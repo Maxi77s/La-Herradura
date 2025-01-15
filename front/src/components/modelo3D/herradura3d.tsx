@@ -213,7 +213,9 @@ const ThreeModel: React.FC = () => {
   const handleWhatsAppClick = () => {
     const whatsappNumber = "543585047802"; // Número en formato internacional sin el signo +
     const message = "¡Hola! Me gustaría obtener más información."; // Mensaje predeterminado
-    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+      message
+    )}`;
     window.open(url, "_blank");
   };
 
@@ -235,27 +237,30 @@ const ThreeModel: React.FC = () => {
           isFixed
             ? isMobile
               ? "fixed bottom-4 right-4 z-50" // Mobile position
-              : "fixed top-7 right-4 z-50" // Desktop position
+              : "fixed top-8 right-32 z-50" // Desktop position
             : "absolute bottom-36 flex justify-center w-full z-20" // Initial position
         } text-center`}
       >
         <motion.button
-          whileHover={{ scale: 1.1 }}
+          whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleWhatsAppClick}
-          className="relative flex items-center justify-center text-white font-bold py-3 px-10 rounded-full bg-gradient-to-r from-pink-500 to-orange-500 shadow-md overflow-hidden"
+          className="relative flex items-center justify-center text-white font-bold py-3 px-10 rounded-md bg-black border-2 border-white shadow-lg overflow-hidden group transition-all duration-300"
         >
-          <span className="relative z-10">Reservar</span>
-          <GiHorseshoe className="ml-3 w-6 h-6 relative z-10" />
+          <span className="relative z-10 group-hover:text-black transition-colors duration-300">
+            Reservar
+          </span>
+          <GiHorseshoe className="ml-3 w-6 h-6 relative z-10 group-hover:text-black transition-colors duration-300" />
           <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-[#FF6B6B] to-transparent opacity-100"
-            animate={{
-              x: ["-100%", "100%"],
+            className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-all duration-300"
+            style={{
+              zIndex: 5,
             }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "linear",
+          ></motion.div>
+          <motion.div
+            className="absolute inset-0 rounded-md border-2 border-white group-hover:border-black transition-colors duration-300 pointer-events-none"
+            style={{
+              zIndex: 9,
             }}
           ></motion.div>
         </motion.button>
