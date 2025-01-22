@@ -1,15 +1,23 @@
-import {
-    FormValues,
-    validateForm,
-    ValidationErrors,
-} from "@/helpers/validaciones";
-import es from "date-fns/locale/es";
-import React, { useEffect, useState } from "react";
-import DatePicker, { registerLocale } from "react-datepicker";
+import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import "react-datepicker/dist/react-datepicker.css";
 import "tailwindcss/tailwind.css";
+import { registerLocale } from "react-datepicker";
+import { es } from "date-fns/locale/es";
 
-registerLocale("es", es);
+const esLocale = {
+  ...es,
+  options: {}, // Agregar una propiedad options vacía
+};
+registerLocale("es", esLocale);
+
+const DatePicker = dynamic(
+  () =>
+    import("react-datepicker").then(
+      (mod) => mod.default as React.ComponentType<any>
+    ),
+  { ssr: false }
+);
 
 interface BookingFormProps {
   occupiedDates: string[];
@@ -21,43 +29,52 @@ interface BookingFormProps {
   }) => void;
 }
 
-const Reserva: React.FC<BookingFormProps> = ({ occupiedDates, onSubmit }) => {
+const calendarName = "Calendario de reservas";
+
+const Reserva: React.FC<BookingFormProps> = ({ occupiedDates }) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [comments, setComments] = useState("");
-  const [errors, setErrors] = useState<ValidationErrors>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Convert occupiedDates to Date objects
-  const occupiedDateObjects = occupiedDates.map((date) => new Date(date));
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    if (!selectedDate)
+      newErrors.selectedDate = "Por favor selecciona una fecha.";
+    if (!name.trim()) newErrors.name = "El nombre es obligatorio.";
+    if (!phone.trim())
+      newErrors.phone = "El número de teléfono es obligatorio.";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-  // Validate the form on any field change
-  useEffect(() => {
-    const formValues: FormValues = {
-      name,
-      phone,
-      comments,
-      selectedDate,
-      occupiedDates,
-    };
-    const validationErrors = validateForm(formValues);
-    setErrors(validationErrors);
-  }, [name, phone, comments, selectedDate, occupiedDates]);
+  const generateWhatsAppMessage = () => {
+    const formattedDate = selectedDate
+      ? selectedDate.toISOString().split("T")[0]
+      : "No seleccionada";
+    const message = `
+  Hola, me gustaría reservar con los siguientes datos:
+  - Fecha seleccionada: ${formattedDate}
+  - Nombre: ${name}
+  - Teléfono: ${phone}
+  - Comentarios: ${comments || "Ninguno"}
+  - Calendario: ${calendarName}
+    `.trim(); // Elimina espacios adicionales al inicio y fin
+
+    // Sustituye saltos de línea y caracteres no seguros
+    return encodeURIComponent(message.replace(/\n/g, "\n"));
+  };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+    if (!validateForm()) return;
 
-    if (Object.keys(errors).length > 0) {
-      return;
-    }
-
-    // Si no hay errores, envía los datos
-    onSubmit({
-      date: selectedDate!.toISOString().split("T")[0],
-      name,
-      phone,
-      comments,
-    });
+    const message = generateWhatsAppMessage();
+    const phoneNumber = "+543585047802"; // Reemplaza con tu número de WhatsApp
+    const whatsappURL = `https://wa.me/${phoneNumber}?text=${message}`;
+    console.log("WhatsApp URL:", whatsappURL); // Debug para verificar el enlace generado
+    window.open(whatsappURL, "_blank");
   };
 
   const isDateOccupied = (date: Date): boolean => {
@@ -72,32 +89,26 @@ const Reserva: React.FC<BookingFormProps> = ({ occupiedDates, onSubmit }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 border border-gray-300 rounded shadow-lg bg-white">
-      <h2 className="text-2xl font-bold text-center text-blue-600 mb-6">
-        Reservar Salón de Eventos
-      </h2>
-      <form
-        onSubmit={handleSubmit}
-        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-      >
-        {/* Fecha */}
+    <div className="relative min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-gray-200 flex justify-center items-start">
+      <div className="flex flex-col lg:flex-row gap-8 items-start w-11/12 max-w-5xl p-6 mt-16 border border-gray-700 rounded-lg shadow-xl bg-gray-950">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-400 mb-3">
             Selecciona un día:
           </label>
           <DatePicker
             selected={selectedDate}
-            onChange={(date) => setSelectedDate(date)}
-            filterDate={(date) => !isDateDisabled(date)}
+            onChange={(date: Date | null) => setSelectedDate(date)}
             locale="es"
+            filterDate={(date: Date) => !isDateDisabled(date)}
             inline
-            dayClassName={(date) => {
+            calendarClassName="bg-gray-800 border-gray-700 text-gray-300"
+            dayClassName={(date: Date) => {
               const isOccupied = isDateOccupied(date);
-              const isSelected =
-                selectedDate?.toISOString().split("T")[0] ===
-                date.toISOString().split("T")[0];
-              if (isOccupied) return "bg-red-500 text-white rounded-full";
-              if (isSelected) return "bg-blue-500 text-white rounded-full";
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              if (isOccupied) return "bg-red-600 text-white rounded-full";
+              if (date >= today)
+                return "hover:bg-green-400 hover:text-black rounded-full";
               return "";
             }}
           />
@@ -106,64 +117,59 @@ const Reserva: React.FC<BookingFormProps> = ({ occupiedDates, onSubmit }) => {
           )}
         </div>
 
-        {/* Nombre, Teléfono y Comentarios */}
-        <div className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex-1 flex flex-col gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-400 mb-2">
               Nombre Completo <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 border rounded focus:ring focus:ring-blue-500"
+              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-200 placeholder-gray-500"
               placeholder="Ingresa tu nombre completo"
             />
             {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+              <p className="text-red-500 text-sm mt-2">{errors.name}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-400 mb-2">
               Número de Teléfono <span className="text-red-500">*</span>
             </label>
             <input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-3 py-2 border rounded focus:ring focus:ring-blue-500"
+              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-200 placeholder-gray-500"
               placeholder="Ingresa tu número de teléfono"
             />
             {errors.phone && (
-              <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
+              <p className="text-red-500 text-sm mt-2">{errors.phone}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-400 mb-2">
               Comentarios (opcional)
             </label>
             <textarea
               value={comments}
               onChange={(e) => setComments(e.target.value)}
-              className="w-full px-3 py-2 border rounded focus:ring focus:ring-blue-500"
+              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-200 placeholder-gray-500"
               placeholder="Ingresa algún comentario o requerimiento especial"
             />
-            {errors.comments && (
-              <p className="text-red-500 text-sm mt-1">{errors.comments}</p>
-            )}
           </div>
 
           <button
             type="submit"
-            className="w-full px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            disabled={Object.keys(errors).length > 0}
+            className="w-full px-5 py-3 bg-teal-600 hover:bg-teal-500 rounded-lg text-white font-semibold shadow-md disabled:bg-gray-600 disabled:cursor-not-allowed"
           >
-            Reservar
+            Consultar día de reserva
           </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };

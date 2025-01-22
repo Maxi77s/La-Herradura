@@ -85,10 +85,12 @@ const ServiceCarousel: React.FC = () => {
 
   return (
     <div
+    
       ref={ref}
       className="w-full flex justify-center py-8 px-4 sm:px-6 lg:px-8 pb-16 relative"
     >
       <div
+      id="service"
         className="transform scale-100 sm:scale-75 origin-center"
         style={{ maxWidth: "85%", overflow: "visible" }}
       >

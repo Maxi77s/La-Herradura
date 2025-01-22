@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation"; // Importa useRouter
 import { GiHorseshoe } from "react-icons/gi";
 
 import * as THREE from "three";
@@ -14,6 +15,7 @@ const ThreeModel: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   const glbPath = "/herradura.glb";
+  const router = useRouter(); // Inicializa el router
 
   // Detect mobile devices
   useEffect(() => {
@@ -134,36 +136,6 @@ const ThreeModel: React.FC = () => {
       isInteracting = false;
     };
 
-    // Touch interaction
-    const onTouchStart = (event: TouchEvent) => {
-      if (event.touches.length === 1) {
-        const touch = event.touches[0];
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObjects(scene.children);
-        if (intersects.length > 0) {
-          isInteracting = true;
-          previousInteractionX = touch.clientX;
-        }
-      }
-    };
-
-    const onTouchMove = (event: TouchEvent) => {
-      if (isInteracting && event.touches.length === 1) {
-        const touch = event.touches[0];
-        const deltaX = touch.clientX - previousInteractionX;
-        scene.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            child.rotation.y += deltaX * 0.005;
-          }
-        });
-        previousInteractionX = touch.clientX;
-      }
-    };
-
-    const onTouchEnd = () => {
-      isInteracting = false;
-    };
-
     const onWindowResize = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
@@ -175,9 +147,6 @@ const ThreeModel: React.FC = () => {
     window.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
-    window.addEventListener("touchstart", onTouchStart);
-    window.addEventListener("touchmove", onTouchMove);
-    window.addEventListener("touchend", onTouchEnd);
     window.addEventListener("resize", onWindowResize);
 
     const animate = () => {
@@ -197,9 +166,6 @@ const ThreeModel: React.FC = () => {
       window.removeEventListener("mousedown", onMouseDown);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("resize", onWindowResize);
       renderer.dispose();
     };
@@ -210,17 +176,13 @@ const ThreeModel: React.FC = () => {
     document.body.style.cursor = isOverModel ? "pointer" : "default";
   }, [isOverModel]);
 
-  const handleWhatsAppClick = () => {
-    const whatsappNumber = "543585047802"; // Número en formato internacional sin el signo +
-    const message = "¡Hola! Me gustaría obtener más información."; // Mensaje predeterminado
-    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-      message
-    )}`;
-    window.open(url, "_blank");
+  const handleReserveClick = () => {
+    router.push("/Reservar"); // Navega a la ruta "/Reservar"
   };
 
   return (
     <div
+    id="inicio"
       className="relative min-h-screen bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: 'url("/FondoHerradura.webp")' }}
     >
@@ -244,7 +206,7 @@ const ThreeModel: React.FC = () => {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={handleWhatsAppClick}
+          onClick={handleReserveClick} // Cambiado a handleReserveClick
           className="relative flex items-center justify-center text-white font-bold py-3 px-10 rounded-md bg-black border-2 border-white shadow-lg overflow-hidden group transition-all duration-300"
         >
           <span className="relative z-10 group-hover:text-black transition-colors duration-300">

@@ -34,36 +34,52 @@ const Navbar: React.FC = () => {
     >
       <div className="px-4 py-2 flex justify-between items-center">
         {/* Logo Section */}
-        <div className="flex items-center">
+        <div 
+        className="flex items-center">
+          <a href="/"></a>
           <img
+          
             src="/image/LAHERRADURA.png"
             alt="Icon"
             className="w-24 h-auto object-contain hover:brightness-150 transition-all duration-300"
           />
+          
         </div>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
-          <motion.span
-            whileHover={{ scale: 1.1, color: "linear-gradient(to right, #3AB4F2, #65C0BA)" }}
+          <motion.a
+            href="/#inicio"
+            whileHover={{
+              scale: 1.1,
+              color: "linear-gradient(to right, #3AB4F2, #65C0BA)",
+            }}
             className="text-white font-light text-lg cursor-pointer transition-all duration-300"
           >
             Inicio
-          </motion.span>
+          </motion.a>
 
-          <motion.span
-            whileHover={{ scale: 1.1, color: "linear-gradient(to right, #3AB4F2, #65C0BA)" }}
+          <motion.a
+            href="/#service"
+            whileHover={{
+              scale: 1.1,
+              color: "linear-gradient(to right, #3AB4F2, #65C0BA)",
+            }}
             className="text-white font-light text-lg cursor-pointer transition-all duration-300"
           >
             Servicios
-          </motion.span>
+          </motion.a>
 
-          <motion.span
-            whileHover={{ scale: 1.1, color: "linear-gradient(to right, #3AB4F2, #65C0BA)" }}
+          <motion.a
+            href="/#nosotros"
+            whileHover={{
+              scale: 1.1,
+              color: "linear-gradient(to right, #3AB4F2, #65C0BA)",
+            }}
             className="text-white font-light text-lg cursor-pointer transition-all duration-300"
           >
-            Contacto
-          </motion.span>
+            Nosotros
+          </motion.a>
         </div>
 
         {/* Social Media Icons */}
@@ -71,19 +87,24 @@ const Navbar: React.FC = () => {
           <a href="https://wa.me/" target="_blank" rel="noopener noreferrer">
             <FaWhatsapp className="text-white text-lg hover:text-[#25D366] transition-all duration-300" />
           </a>
-          <a href="https://instagram.com/" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://instagram.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <FaInstagram className="text-white text-lg hover:text-[#E1306C] transition-all duration-300" />
           </a>
-          <a href="https://facebook.com/" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://facebook.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <FaFacebookF className="text-white text-lg hover:text-[#1877F2] transition-all duration-300" />
           </a>
         </div>
 
         {/* Hamburger Menu */}
-        <div
-          className="md:hidden flex items-center"
-          onClick={toggleMenu}
-        >
+        <div className="md:hidden flex items-center" onClick={toggleMenu}>
           <motion.svg
             whileHover={{ scale: 1.1, fill: "#3AB4F2" }}
             xmlns="http://www.w3.org/2000/svg"
@@ -131,32 +152,43 @@ const Navbar: React.FC = () => {
             </motion.svg>
           </motion.div>
 
-          <motion.span
+          <motion.a
+            href="/"
             whileHover={{ scale: 1.2, color: "#3AB4F2" }}
             className="text-white font-light text-lg cursor-pointer"
           >
             Inicio
-          </motion.span>
-          <motion.span
+          </motion.a>
+          <motion.a
+            href="/example"
             whileHover={{ scale: 1.2, color: "#3AB4F2" }}
             className="text-white font-light text-lg cursor-pointer"
           >
             Servicios
-          </motion.span>
-          <motion.span
+          </motion.a>
+          <motion.a
+            href="/example"
             whileHover={{ scale: 1.2, color: "#3AB4F2" }}
             className="text-white font-light text-lg cursor-pointer"
           >
             Contacto
-          </motion.span>
+          </motion.a>
           <div className="flex space-x-4">
             <a href="https://wa.me/" target="_blank" rel="noopener noreferrer">
               <FaWhatsapp className="text-white text-xl hover:text-[#25D366] transition-all duration-300" />
             </a>
-            <a href="https://instagram.com/" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://instagram.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <FaInstagram className="text-white text-xl hover:text-[#E1306C] transition-all duration-300" />
             </a>
-            <a href="https://facebook.com/" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://facebook.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <FaFacebookF className="text-white text-xl hover:text-[#1877F2] transition-all duration-300" />
             </a>
           </div>
