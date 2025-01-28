@@ -18,34 +18,23 @@ const DatePicker = dynamic(
   { ssr: false }
 );
 
-const calendarName = "Calendario de reservas";
+// Define las props esperadas por el componente
+interface ReservaProps {
+  occupiedDates: string[];
+  onSubmit: (data: {
+    date: string;
+    name: string;
+    phone: string;
+    comments: string;
+  }) => void;
+}
 
-const Reserva: React.FC = () => {
-  const [occupiedDates, setOccupiedDates] = useState<string[]>([]); // Array de fechas ocupadas
+const Reserva: React.FC<ReservaProps> = ({ occupiedDates, onSubmit }) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [comments, setComments] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    // Obtener las fechas ocupadas del backend
-    const fetchOccupiedDates = async () => {
-      try {
-        const response = await fetch("http://localhost:3001/api/appointments");
-        const data = await response.json();
-        // Filtrar solo las fechas y convertirlas a formato YYYY-MM-DD
-        const dates = data.map((appointment: { date: string }) =>
-          new Date(appointment.date).toISOString().split("T")[0]
-        );
-        setOccupiedDates(dates);
-      } catch (error) {
-        console.error("Error fetching occupied dates:", error);
-      }
-    };
-
-    fetchOccupiedDates();
-  }, []);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -56,30 +45,20 @@ const Reserva: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const generateWhatsAppMessage = () => {
-    const formattedDate = selectedDate
-      ? selectedDate.toISOString().split("T")[0]
-      : "No seleccionada";
-    const message = `
-    Hola, me gustaría reservar con los siguientes datos:
-    - Fecha seleccionada: ${formattedDate}
-    - Nombre: ${name}
-    - Teléfono: ${phone}
-    - Comentarios: ${comments || "Ninguno"}
-    - Calendario: ${calendarName}
-    `.trim(); // Elimina espacios adicionales al inicio y fin
-
-    return encodeURIComponent(message.replace(/\n/g, "\n"));
-  };
-
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (!validateForm()) return;
 
-    const message = generateWhatsAppMessage();
-    const phoneNumber = "+543585047802"; // Reemplaza con tu número de WhatsApp
-    const whatsappURL = `https://wa.me/${phoneNumber}?text=${message}`;
-    window.open(whatsappURL, "_blank");
+    const formattedDate = selectedDate
+      ? selectedDate.toISOString().split("T")[0]
+      : "No seleccionada";
+
+    onSubmit({
+      date: formattedDate,
+      name,
+      phone,
+      comments,
+    });
   };
 
   const isDateOccupied = (date: Date): boolean => {
@@ -109,7 +88,7 @@ const Reserva: React.FC = () => {
               const isOccupied = isDateOccupied(date);
               const today = new Date();
               today.setHours(0, 0, 0, 0);
-              if (isOccupied) return "bg-red-600 text-white rounded-full"; // Día ocupado en rojo
+              if (isOccupied) return "bg-red-600 text-white rounded-full";
               if (date >= today)
                 return "hover:bg-green-400 hover:text-black rounded-full";
               return "";
