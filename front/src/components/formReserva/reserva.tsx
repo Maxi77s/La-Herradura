@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import "react-datepicker/dist/react-datepicker.css";
 import "tailwindcss/tailwind.css";
 import { registerLocale } from "react-datepicker";
-import es   from "date-fns/locale/es";
+import es from "date-fns/locale/es";
 
 const esLocale = {
   ...es,
@@ -12,39 +14,44 @@ const esLocale = {
 registerLocale("es", esLocale);
 
 const DatePicker = dynamic(
-  () =>
-    import("react-datepicker").then(
-      (mod) => mod.default as React.ComponentType<any>
-    ),
+  () => import("react-datepicker").then((mod) => mod.default as React.ComponentType<any>),
   { ssr: false }
 );
 
-interface BookingFormProps {
-  occupiedDates: string[];
-  onSubmit: (data: {
-    date: string;
-    name: string;
-    phone: string;
-    comments: string;
-  }) => void;
-}
-
 const calendarName = "Calendario de reservas";
 
-const Reserva: React.FC<BookingFormProps> = ({ occupiedDates }) => {
+const Reserva: React.FC = () => {
+  const [occupiedDates, setOccupiedDates] = useState<string[]>([]); // Array de fechas ocupadas
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [comments, setComments] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  useEffect(() => {
+    // Obtener las fechas ocupadas del backend
+    const fetchOccupiedDates = async () => {
+      try {
+        const response = await fetch("http://localhost:3001/api/appointments");
+        const data = await response.json();
+        // Filtrar solo las fechas y convertirlas a formato YYYY-MM-DD
+        const dates = data.map((appointment: { date: string }) =>
+          new Date(appointment.date).toISOString().split("T")[0]
+        );
+        setOccupiedDates(dates);
+      } catch (error) {
+        console.error("Error fetching occupied dates:", error);
+      }
+    };
+
+    fetchOccupiedDates();
+  }, []);
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    if (!selectedDate)
-      newErrors.selectedDate = "Por favor selecciona una fecha.";
+    if (!selectedDate) newErrors.selectedDate = "Por favor selecciona una fecha.";
     if (!name.trim()) newErrors.name = "El nombre es obligatorio.";
-    if (!phone.trim())
-      newErrors.phone = "El número de teléfono es obligatorio.";
+    if (!phone.trim()) newErrors.phone = "El número de teléfono es obligatorio.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -54,15 +61,14 @@ const Reserva: React.FC<BookingFormProps> = ({ occupiedDates }) => {
       ? selectedDate.toISOString().split("T")[0]
       : "No seleccionada";
     const message = `
-  Hola, me gustaría reservar con los siguientes datos:
-  - Fecha seleccionada: ${formattedDate}
-  - Nombre: ${name}
-  - Teléfono: ${phone}
-  - Comentarios: ${comments || "Ninguno"}
-  - Calendario: ${calendarName}
+    Hola, me gustaría reservar con los siguientes datos:
+    - Fecha seleccionada: ${formattedDate}
+    - Nombre: ${name}
+    - Teléfono: ${phone}
+    - Comentarios: ${comments || "Ninguno"}
+    - Calendario: ${calendarName}
     `.trim(); // Elimina espacios adicionales al inicio y fin
 
-    // Sustituye saltos de línea y caracteres no seguros
     return encodeURIComponent(message.replace(/\n/g, "\n"));
   };
 
@@ -73,7 +79,6 @@ const Reserva: React.FC<BookingFormProps> = ({ occupiedDates }) => {
     const message = generateWhatsAppMessage();
     const phoneNumber = "+543585047802"; // Reemplaza con tu número de WhatsApp
     const whatsappURL = `https://wa.me/${phoneNumber}?text=${message}`;
-    console.log("WhatsApp URL:", whatsappURL); // Debug para verificar el enlace generado
     window.open(whatsappURL, "_blank");
   };
 
@@ -92,9 +97,7 @@ const Reserva: React.FC<BookingFormProps> = ({ occupiedDates }) => {
     <div className="relative min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-gray-200 flex justify-center items-start">
       <div className="flex flex-col lg:flex-row gap-8 items-start w-11/12 max-w-5xl p-6 mt-16 border border-gray-700 rounded-lg shadow-xl bg-gray-950">
         <div>
-          <label className="block text-sm font-medium text-gray-400 mb-3">
-            Selecciona un día:
-          </label>
+          <label className="block text-sm font-medium text-gray-400 mb-3">Selecciona un día:</label>
           <DatePicker
             selected={selectedDate}
             onChange={(date: Date | null) => setSelectedDate(date)}
@@ -106,15 +109,13 @@ const Reserva: React.FC<BookingFormProps> = ({ occupiedDates }) => {
               const isOccupied = isDateOccupied(date);
               const today = new Date();
               today.setHours(0, 0, 0, 0);
-              if (isOccupied) return "bg-red-600 text-white rounded-full";
+              if (isOccupied) return "bg-red-600 text-white rounded-full"; // Día ocupado en rojo
               if (date >= today)
                 return "hover:bg-green-400 hover:text-black rounded-full";
               return "";
             }}
           />
-          {errors.selectedDate && (
-            <p className="text-red-500 text-sm mt-2">{errors.selectedDate}</p>
-          )}
+          {errors.selectedDate && <p className="text-red-500 text-sm mt-2">{errors.selectedDate}</p>}
         </div>
 
         <form onSubmit={handleSubmit} className="flex-1 flex flex-col gap-6">
@@ -129,9 +130,7 @@ const Reserva: React.FC<BookingFormProps> = ({ occupiedDates }) => {
               className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-200 placeholder-gray-500"
               placeholder="Ingresa tu nombre completo"
             />
-            {errors.name && (
-              <p className="text-red-500 text-sm mt-2">{errors.name}</p>
-            )}
+            {errors.name && <p className="text-red-500 text-sm mt-2">{errors.name}</p>}
           </div>
 
           <div>
@@ -145,15 +144,11 @@ const Reserva: React.FC<BookingFormProps> = ({ occupiedDates }) => {
               className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-200 placeholder-gray-500"
               placeholder="Ingresa tu número de teléfono"
             />
-            {errors.phone && (
-              <p className="text-red-500 text-sm mt-2">{errors.phone}</p>
-            )}
+            {errors.phone && <p className="text-red-500 text-sm mt-2">{errors.phone}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Comentarios (opcional)
-            </label>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Comentarios (opcional)</label>
             <textarea
               value={comments}
               onChange={(e) => setComments(e.target.value)}
