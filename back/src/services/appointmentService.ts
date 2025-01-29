@@ -1,36 +1,54 @@
-import { prisma } from '../database/prisma'; // Asegúrate de importar el cliente de Prisma
+import { prisma } from "../database/prisma";
 
 export const AppointmentService = {
   async createAppointment(data: {
-    date: string; // Acepta la fecha como una cadena
+    date: string;
     time: string;
     status: string;
     description: string;
     clientName: string;
   }) {
     const { date, time, status, description, clientName } = data;
-
-   // Suponiendo que 'date' es una cadena recibida del frontend, convierte a Date
-const appointmentDate = new Date(date);
-
-// Verifica si la fecha es válida
-if (isNaN(appointmentDate.getTime())) {
-  throw new Error('Fecha inválida'); // Lanza un error si la fecha no es válida
-}
-
-return prisma.appointment.create({
-  data: {
-    date: appointmentDate, // Utiliza la instancia Date para Prisma
-    time,
-    status,
-    description,
-    clientName,
-  },
-});
-
+    const appointmentDate = new Date(date);
+    if (isNaN(appointmentDate.getTime())) {
+      throw new Error("Fecha inválida");
+    }
+    return prisma.appointment.create({
+      data: {
+        date: appointmentDate,
+        time,
+        status,
+        description,
+        clientName,
+      },
+    });
   },
 
   async getAppointments() {
-    return await prisma.appointment.findMany();
+    return await prisma.appointment.findMany({
+      select: {
+        id: true, // Asegúrate de incluir el campo id
+        date: true,
+        time: true,
+        status: true,
+        description: true,
+        clientName: true,
+      },
+    });
+  },
+
+  // Función para obtener una cita por ID
+  async getAppointmentById(id: number) {
+    return await prisma.appointment.findUnique({
+      where: { id },
+    });
+  },
+
+  // Función para actualizar el estado de una cita
+  async updateAppointmentStatus(id: number, status: "active" | "canceled") {
+    return await prisma.appointment.update({
+      where: { id },
+      data: { status },
+    });
   },
 };

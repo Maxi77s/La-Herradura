@@ -29,12 +29,34 @@ interface ReservaProps {
   }) => void;
 }
 
-const Reserva: React.FC<ReservaProps> = ({ occupiedDates, onSubmit }) => {
+const Reserva: React.FC<ReservaProps> = ({ onSubmit }) => {
+  const [occupiedDates, setOccupiedDates] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [comments, setComments] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Obtener las citas ocupadas desde la API
+  useEffect(() => {
+    const fetchOccupiedDates = async () => {
+      try {
+        const response = await fetch("http://localhost:3001/api/appointments/");
+        const data = await response.json();
+        
+        // Filtrar las citas activas y extraer solo las fechas
+        const dates = data
+          .filter((appointment: { status: string }) => appointment.status === "active") // Filtra citas activas
+          .map((appointment: { date: string }) => appointment.date.split("T")[0]); // Extrae solo la fecha (sin la hora)
+        
+        setOccupiedDates(dates); // Actualiza el estado con las fechas ocupadas
+      } catch (error) {
+        console.error("Error al obtener las fechas ocupadas:", error);
+      }
+    };
+
+    fetchOccupiedDates();
+  }, []);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -88,7 +110,7 @@ const Reserva: React.FC<ReservaProps> = ({ occupiedDates, onSubmit }) => {
               const isOccupied = isDateOccupied(date);
               const today = new Date();
               today.setHours(0, 0, 0, 0);
-              if (isOccupied) return "bg-red-600 text-white rounded-full";
+              if (isOccupied) return "bg-red-600 text-white rounded-full"; // Día ocupado en rojo
               if (date >= today)
                 return "hover:bg-green-400 hover:text-black rounded-full";
               return "";

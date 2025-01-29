@@ -1,36 +1,54 @@
 "use client";
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
+
+  const validateInputs = () => {
+    if (!username.trim()) {
+      setError("El nombre de usuario es obligatorio.");
+      return false;
+    }
+    if (!password.trim()) {
+      setError("La contraseña es obligatoria.");
+      return false;
+    }
+    return true;
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
-    const res = await fetch('http://localhost:3001/api/admin/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    });
+    if (!validateInputs()) return; // Si la validación falla, detiene la ejecución.
 
-    if (res.ok) {
-      const data = await res.json();
-      sessionStorage.setItem('isLoggedIn', 'true'); // Guarda el estado de sesión
-      sessionStorage.setItem('token', data.token); // Guarda el token JWT
-      router.push('/Admin'); // Redirige al componente admin
-    } else {
-      const data = await res.json();
-      setError(data.message); // Muestra mensaje de error
+    try {
+      const res = await fetch("http://localhost:3001/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        sessionStorage.setItem("isLoggedIn", "true"); // Guarda el estado de sesión
+        sessionStorage.setItem("token", data.token); // Guarda el token JWT
+        router.push("/Admin"); // Redirige al componente admin
+      } else {
+        const data = await res.json();
+        setError(data.message || "Usuario o contraseña incorrectos."); // Muestra mensaje de error del backend
+      }
+    } catch (err) {
+      setError("Error de conexión. Intenta nuevamente más tarde.");
     }
   };
 
   return (
-    <div className="flex h-screen justify-center items-center bg-gray-100">
+    <div className="flex h-screen justify-center items-center bg-gradient-to-br from-gray-900 via-black to-gray-800 text-gray-200">
       <form
         onSubmit={handleLogin}
         className="bg-white p-6 rounded-lg shadow-md w-80 space-y-4"

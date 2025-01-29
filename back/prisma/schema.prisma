@@ -20,10 +20,10 @@ model Admin {
 }
 
 model Appointment {
-  id          Int      @id @default(autoincrement())
+  id          Int      @id @default(autoincrement()) // Asegúrate de tener esto
   date        DateTime
   time        String
-  status      String   // Active or Canceled
+  status      String
   description String
   clientName  String
 }
