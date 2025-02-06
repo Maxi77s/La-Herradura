@@ -35,6 +35,7 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
+      console.log("API URL:", API_URL);
 
       if (res.ok) {
         const data = await res.json();
