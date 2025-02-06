@@ -8,6 +8,9 @@ const Login = () => {
   const [error, setError] = useState("");
   const router = useRouter();
 
+  // Obtiene la URL de la API de las variables de entorno
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
   const validateInputs = () => {
     if (!username.trim()) {
       setError("El nombre de usuario es obligatorio.");
@@ -27,7 +30,7 @@ const Login = () => {
     if (!validateInputs()) return; // Si la validación falla, detiene la ejecución.
 
     try {
-      const res = await fetch("http://localhost:3001/api/admin/login", {
+      const res = await fetch(`${API_URL}/api/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
@@ -35,9 +38,13 @@ const Login = () => {
 
       if (res.ok) {
         const data = await res.json();
-        sessionStorage.setItem("isLoggedIn", "true"); // Guarda el estado de sesión
-        sessionStorage.setItem("token", data.token); // Guarda el token JWT
-        router.push("/Admin"); // Redirige al componente admin
+        
+        // Guardar el estado de sesión y el token en sessionStorage
+        sessionStorage.setItem("isLoggedIn", "true");
+        sessionStorage.setItem("token", data.token);
+
+        // Redirigir al panel de administración
+        router.push("/Admin");
       } else {
         const data = await res.json();
         setError(data.message || "Usuario o contraseña incorrectos."); // Muestra mensaje de error del backend

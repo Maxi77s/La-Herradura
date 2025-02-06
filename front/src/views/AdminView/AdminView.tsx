@@ -45,8 +45,11 @@ const AdminPage = () => {
       clientName,
     };
 
+    // URL de la API desde las variables de entorno
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
     try {
-      const response = await fetch("http://localhost:3001/api/appointments", {
+      const response = await fetch(`${API_URL}/api/appointments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

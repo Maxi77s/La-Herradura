@@ -41,7 +41,8 @@ const Reserva: React.FC<ReservaProps> = ({ onSubmit }) => {
   useEffect(() => {
     const fetchOccupiedDates = async () => {
       try {
-        const response = await fetch("http://localhost:3001/api/appointments/");
+        const API_URL = process.env.NEXT_PUBLIC_API_URL;
+        const response = await fetch(`${API_URL}/api/appointments/`);
         const data = await response.json();
         
         // Filtrar las citas activas y extraer solo las fechas
