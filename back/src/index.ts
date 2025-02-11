@@ -11,7 +11,7 @@ const app = express(); // Crear la instancia de Express solo una vez
 // Configuración de CORS con múltiples orígenes permitidos
 const allowedOrigins = [
   "http://localhost:3000", // Desarrollo local
-  "https://la-herradura-gg1q9spev-e-commerces-projects-7a8d629e.vercel.app", // Frontend en Vercel
+  "https://la-herradura-n0nq94s5z-e-commerces-projects-7a8d629e.vercel.app", // Frontend en Vercel
   "https://la-herradura-flax.vercel.app/" // Otra versión del frontend en Vercel
 ];
 
