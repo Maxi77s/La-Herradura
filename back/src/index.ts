@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import adminRouter from './routers/adminRouter';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -10,26 +10,28 @@ const app = express();
 
 // Configuración de CORS dinámica para permitir cualquier subdominio de Vercel
 const allowedOrigins = [
-  "http://localhost:3000",  // Desarrollo local
-  "https://la-herradura-flax.vercel.app", // Versión principal en Vercel
-  "https://la-herradura-n0nq94s5z-e-commerces-projects-7a8d629e.vercel.app",
-  /\.vercel\.app$/ // Permitir cualquier subdominio en Vercel
+  "http://localhost:3000",
+  "https://la-herradura-flax.vercel.app",
+  "https://la-herradura-gg1q9spev-e-commerces-projects-7a8d629e.vercel.app"
 ];
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.some((o) => typeof o === "string" ? o === origin : o.test(origin))) {
-        callback(null, true);
-      } else {
-        callback(new Error("No permitido por CORS"));
-      }
-    },
-    credentials: true, // Permite autenticación basada en tokens
-    methods: ["GET", "POST", "PUT", "DELETE"], // Métodos permitidos
-    allowedHeaders: ["Content-Type", "Authorization"], // Headers permitidos
-  })
-);
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  if (req.method === "OPTIONS") {
+    res.sendStatus(200); // Detiene el flujo si es una preflight request
+  } else {
+    next(); // Llamar a next() en todas las demás solicitudes
+  }
+});
+
+app.use(cors({
+  origin: allowedOrigins,
+  methods: "GET, POST, PUT, DELETE, OPTIONS",
+  allowedHeaders: "Content-Type, Authorization"
+}));
 
 app.use(express.json());
 app.use('/api/admin', adminRouter);
