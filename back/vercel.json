@@ -1,29 +1,30 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "back/src/index.ts",
-        "use": "@vercel/node"
-      },
-      {
-        "src": "front/package.json",
-        "use": "@vercel/next"
+  "version": 2,
+  "builds": [
+    {
+      "src": "back/src/index.ts",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["back/dist/**"]
       }
-    ],
-    "routes": [
-      {
-        "src": "/api/(.*)",
-        "dest": "back/src/index.ts"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "front/$1"
-      }
-    ],
-    "env": {
-      "DATABASE_URL": "@database_url",
-      "PORT": "@port",
-      "JWT_SECRET": "@jwt_secret"
+    },
+    {
+      "src": "front/package.json",
+      "use": "@vercel/next"
     }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "back/dist/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "front/$1"
+    }
+  ],
+  "env": {
+    "DATABASE_URL": "@database_url",
+    "JWT_SECRET": "@jwt_secret"
   }
-  
+}

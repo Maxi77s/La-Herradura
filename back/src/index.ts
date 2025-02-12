@@ -12,6 +12,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:3000",  // Desarrollo local
   "https://la-herradura-flax.vercel.app", // Versión principal en Vercel
+  "https://la-herradura-n0nq94s5z-e-commerces-projects-7a8d629e.vercel.app",
   /\.vercel\.app$/ // Permitir cualquier subdominio en Vercel
 ];
 
