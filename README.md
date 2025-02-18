@@ -23,9 +23,9 @@ Este proyecto fue desarrollado utilizando tecnologías modernas y eficientes:
 
 ## 📩 Contacto
 
-🔗 **GitHub:** [[Tu enlace aquí](https://github.com/Maxi77s/La-Herradura/)]  
+🔗 **GitHub:** [[Link](https://github.com/Maxi77s/La-Herradura/)]  
 📧 **Email:** [mnievasarias02@gmail.com]  
-💼 **LinkedIn:** [[Tu enlace aquí](https://www.linkedin.com/in/maximiliano-nievas-arias/)]  
+💼 **LinkedIn:** [[Link](https://www.linkedin.com/in/maximiliano-nievas-arias/)]  
 
 ---
 _¡Este proyecto sigue en desarrollo y cualquier sugerencia es bienvenida! 💡_
