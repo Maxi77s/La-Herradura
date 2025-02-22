@@ -21,9 +21,9 @@
     }
   ],
   "env": {
-    "DATABASE_URL": "@database_url",
-    "PORT": "@port",
-    "JWT_SECRET": "@jwt_secret",
+    "DATABASE_URL": "postgresql://postgres:44483-mm@db.pkumpxluuwvcytjuikte.supabase.co:5432/postgres",
+    "PORT": "3001",
+    "JWT_SECRET": "unaClaveMuySegura",
     "NEXT_PUBLIC_API_URL": "https://${VERCEL_URL}"
   }
 }

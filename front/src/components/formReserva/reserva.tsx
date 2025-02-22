@@ -9,7 +9,7 @@ import es from "date-fns/locale/es";
 
 const esLocale = {
   ...es,
-  options: {}, // Agregar una propiedad options vacía
+  options: {},
 };
 registerLocale("es", esLocale);
 
@@ -18,7 +18,6 @@ const DatePicker = dynamic(
   { ssr: false }
 );
 
-// Define las props esperadas por el componente
 interface ReservaProps {
   occupiedDates: string[];
   onSubmit: (data: {
@@ -37,7 +36,6 @@ const Reserva: React.FC<ReservaProps> = ({ onSubmit }) => {
   const [comments, setComments] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Obtener las citas ocupadas desde la API
   useEffect(() => {
     const fetchOccupiedDates = async () => {
       try {
@@ -45,12 +43,11 @@ const Reserva: React.FC<ReservaProps> = ({ onSubmit }) => {
         const response = await fetch(`${API_URL}/api/appointments/`);
         const data = await response.json();
         
-        // Filtrar las citas activas y extraer solo las fechas
         const dates = data
-          .filter((appointment: { status: string }) => appointment.status === "active") // Filtra citas activas
-          .map((appointment: { date: string }) => appointment.date.split("T")[0]); // Extrae solo la fecha (sin la hora)
+          .filter((appointment: { status: string }) => appointment.status === "active")
+          .map((appointment: { date: string }) => appointment.date.split("T")[0]);
         
-        setOccupiedDates(dates); // Actualiza el estado con las fechas ocupadas
+        setOccupiedDates(dates);
       } catch (error) {
         console.error("Error al obtener las fechas ocupadas:", error);
       }
@@ -72,16 +69,14 @@ const Reserva: React.FC<ReservaProps> = ({ onSubmit }) => {
     event.preventDefault();
     if (!validateForm()) return;
 
-    const formattedDate = selectedDate
-      ? selectedDate.toISOString().split("T")[0]
-      : "No seleccionada";
+    const formattedDate = selectedDate ? selectedDate.toISOString().split("T")[0] : "No seleccionada";
 
-    onSubmit({
-      date: formattedDate,
-      name,
-      phone,
-      comments,
-    });
+    onSubmit({ date: formattedDate, name, phone, comments });
+
+    const whatsappMessage = `Hola, quiero consultar la disponibilidad para el día ${formattedDate}.\n\nNombre: ${name}\nTeléfono: ${phone}\nComentarios: ${comments || "Ninguno"}`;
+    const whatsappUrl = `https://wa.me/543585047802?text=${encodeURIComponent(whatsappMessage)}`;
+    
+    window.open(whatsappUrl, "_blank");
   };
 
   const isDateOccupied = (date: Date): boolean => {
@@ -111,7 +106,7 @@ const Reserva: React.FC<ReservaProps> = ({ onSubmit }) => {
               const isOccupied = isDateOccupied(date);
               const today = new Date();
               today.setHours(0, 0, 0, 0);
-              if (isOccupied) return "bg-red-600 text-white rounded-full"; // Día ocupado en rojo
+              if (isOccupied) return "bg-red-600 text-white rounded-full";
               if (date >= today)
                 return "hover:bg-green-400 hover:text-black rounded-full";
               return "";
@@ -122,49 +117,23 @@ const Reserva: React.FC<ReservaProps> = ({ onSubmit }) => {
 
         <form onSubmit={handleSubmit} className="flex-1 flex flex-col gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Nombre Completo <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-200 placeholder-gray-500"
-              placeholder="Ingresa tu nombre completo"
-            />
+            <label className="block text-sm font-medium text-gray-400 mb-2">Nombre Completo *</label>
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded text-gray-200" placeholder="Ingresa tu nombre" />
             {errors.name && <p className="text-red-500 text-sm mt-2">{errors.name}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Número de Teléfono <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-200 placeholder-gray-500"
-              placeholder="Ingresa tu número de teléfono"
-            />
+            <label className="block text-sm font-medium text-gray-400 mb-2">Teléfono *</label>
+            <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded text-gray-200" placeholder="Ingresa tu teléfono" />
             {errors.phone && <p className="text-red-500 text-sm mt-2">{errors.phone}</p>}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-400 mb-2">Comentarios (opcional)</label>
-            <textarea
-              value={comments}
-              onChange={(e) => setComments(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-200 placeholder-gray-500"
-              placeholder="Ingresa algún comentario o requerimiento especial"
-            />
+            <textarea value={comments} onChange={(e) => setComments(e.target.value)} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded text-gray-200" placeholder="Ingresa un comentario" />
           </div>
 
-          <button
-            type="submit"
-            className="w-full px-5 py-3 bg-teal-600 hover:bg-teal-500 rounded-lg text-white font-semibold shadow-md disabled:bg-gray-600 disabled:cursor-not-allowed"
-          >
-            Consultar día de reserva
-          </button>
+          <button type="submit" className="w-full px-5 py-3 bg-teal-600 hover:bg-teal-500 rounded-lg text-white font-semibold">Consultar día de reserva</button>
         </form>
       </div>
     </div>

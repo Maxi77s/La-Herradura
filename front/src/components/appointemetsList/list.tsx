@@ -16,6 +16,9 @@ const AppointmentsList: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
+  const [hiddenAppointments, setHiddenAppointments] = useState<Set<number>>(new Set(
+    JSON.parse(localStorage.getItem("hiddenAppointments") || "[]")
+  ));
   const router = useRouter();
 
   const checkAuth = () => {
@@ -99,6 +102,16 @@ const AppointmentsList: React.FC = () => {
     }
   };
 
+  const hideAppointment = (id: number | null) => {
+    if (id !== null && id !== undefined) {
+      setHiddenAppointments((prevHidden) => {
+        const newHidden = new Set([...prevHidden, id]);
+        localStorage.setItem("hiddenAppointments", JSON.stringify([...newHidden]));
+        return newHidden;
+      });
+    }
+  };
+
   if (loading) {
     return <div className="text-center text-white">Cargando...</div>;
   }
@@ -120,6 +133,8 @@ const AppointmentsList: React.FC = () => {
 
         <div className="space-y-4">
           {appointments.map((appointment, index) => {
+            if (hiddenAppointments.has(appointment.id!)) return null;
+            
             const uniqueKey = appointment.id
               ? `${appointment.id}-${appointment.date}`
               : `fallback-key-${index}`;
@@ -127,8 +142,14 @@ const AppointmentsList: React.FC = () => {
             return (
               <div
                 key={uniqueKey}
-                className="bg-gray-600 p-4 rounded-lg shadow-md"
+                className="bg-gray-600 p-4 rounded-lg shadow-md relative"
               >
+                <button
+                  onClick={() => hideAppointment(appointment.id!)}
+                  className="absolute top-2 right-2 text-gray-400 hover:text-white transition-colors duration-200"
+                >
+                  ✕
+                </button>
                 <div className="flex flex-col justify-between items-start space-y-2">
                   <p className="text-lg font-semibold text-white">{appointment.clientName}</p>
                   <p className="text-sm text-gray-400">
