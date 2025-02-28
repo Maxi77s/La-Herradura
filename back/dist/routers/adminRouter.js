@@ -2,7 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const adminController_1 = require("../controllers/adminController");
+const asyncHandler_1 = require("../middleware/asyncHandler");
 const adminRouter = (0, express_1.Router)();
-adminRouter.post('/register', adminController_1.AdminController.createAdmin);
-adminRouter.post('/login', adminController_1.AdminController.login);
+adminRouter.get("/", (req, res) => {
+    res.send("Admin API funcionando correctamente");
+});
+adminRouter.post('/register', (0, asyncHandler_1.asyncHandler)(adminController_1.AdminController.createAdmin));
+adminRouter.post('/login', (0, asyncHandler_1.asyncHandler)(adminController_1.AdminController.login));
 exports.default = adminRouter;

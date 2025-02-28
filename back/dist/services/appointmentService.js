@@ -14,19 +14,50 @@ const prisma_1 = require("../database/prisma");
 exports.AppointmentService = {
     createAppointment(data) {
         return __awaiter(this, void 0, void 0, function* () {
-            return prisma_1.prisma.appointment.create({ data });
+            const { date, time, status, description, clientName } = data;
+            const appointmentDate = new Date(date);
+            if (isNaN(appointmentDate.getTime())) {
+                throw new Error("Fecha inválida");
+            }
+            return prisma_1.prisma.appointment.create({
+                data: {
+                    date: appointmentDate,
+                    time,
+                    status,
+                    description,
+                    clientName,
+                },
+            });
         });
     },
     getAppointments() {
         return __awaiter(this, void 0, void 0, function* () {
-            return prisma_1.prisma.appointment.findMany({
+            return yield prisma_1.prisma.appointment.findMany({
                 select: {
+                    id: true, // Asegúrate de incluir el campo id
                     date: true,
                     time: true,
                     status: true,
                     description: true,
                     clientName: true,
                 },
+            });
+        });
+    },
+    // Función para obtener una cita por ID
+    getAppointmentById(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield prisma_1.prisma.appointment.findUnique({
+                where: { id },
+            });
+        });
+    },
+    // Función para actualizar el estado de una cita
+    updateAppointmentStatus(id, status) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield prisma_1.prisma.appointment.update({
+                where: { id },
+                data: { status },
             });
         });
     },
