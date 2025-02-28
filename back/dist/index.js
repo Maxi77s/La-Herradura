@@ -49,7 +49,7 @@ app.use((0, cors_1.default)({
 app.use(express_1.default.json());
 app.use('/api/admin', adminRouter_1.default);
 app.use('/api/appointments', appointmentRouter_1.default);
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
 app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running at http://0.0.0.0:${PORT}`);
 });
