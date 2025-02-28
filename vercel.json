@@ -21,7 +21,7 @@
     }
   ],
   "env": {
-    "DATABASE_URL": "postgresql://postgres:44483-mm@localhost:5432/my_database",
+    "DATABASE_URL": "postgresql://postgres:44483-mm@la-herradura-production.up.railway.app:5432/my_database",
     "PORT": "3001",
     "JWT_SECRET": "unaClaveMuySegura",
     "NEXT_PUBLIC_API_URL": "https://${VERCEL_URL}"

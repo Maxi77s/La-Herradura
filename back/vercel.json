@@ -4,26 +4,18 @@
     {
       "src": "back/src/index.ts",
       "use": "@vercel/node"
-    },
-    {
-      "src": "front/package.json",
-      "use": "@vercel/next"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
       "dest": "back/src/index.ts"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "front/$1"
     }
   ],
   "env": {
-    "DATABASE_URL": "@database_url",
-    "PORT": "@port",
-    "JWT_SECRET": "@jwt_secret",
+    "DATABASE_URL": "postgresql://postgres:44483-mm@la-herradura-production.up.railway.app:5432/my_database",
+    "PORT": "3001",
+    "JWT_SECRET": "unaClaveMuySegura",
     "NEXT_PUBLIC_API_URL": "https://${VERCEL_URL}"
   }
 }
