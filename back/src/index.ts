@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import appointmentRouter from './routers/appointmentRouter';
 
-dotenv.config({ path: process.env.NODE_ENV === 'production' ? '.envproduction' : '.env' });
+dotenv.config();
 
 const app = express();
 
@@ -13,7 +13,6 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://la-herradura-flax.vercel.app",
   "https://la-herradura-gg1q9spev-e-commerces-projects-7a8d629e.vercel.app",
-  "https://la-herradura-production.up.railway.app",
   /\.vercel\.app$/ // Permite cualquier subdominio en Vercel
 ];
 
