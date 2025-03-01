@@ -8,10 +8,11 @@ dotenv.config();
 
 const app = express();
 
+// Configuración de CORS para permitir cualquier subdominio de Vercel y localhost
 const allowedOrigins = [
   "http://localhost:3000",
   "https://la-herradura-flax.vercel.app",
-  /\.vercel\.app$/
+  /\.vercel\.app$/ // Permite cualquier subdominio en Vercel
 ];
 
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -48,5 +49,8 @@ app.use(express.json());
 app.use('/api/admin', adminRouter);
 app.use('/api/appointments', appointmentRouter);
 
-// 🚀 Vercel necesita que exportemos `app`
-export default app;
+// Solo en desarrollo local
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});

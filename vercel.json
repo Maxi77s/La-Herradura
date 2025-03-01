@@ -13,17 +13,17 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/back"
+      "dest": "back/dist/index.js"
     },
     {
       "src": "/(.*)",
-      "dest": "/front"
+      "dest": "front"
     }
   ],
   "env": {
     "DATABASE_URL": "postgresql://postgres:ocgisoMPuszOuQdjfKIFqsUiKACgZCtP@metro.proxy.rlwy.net:28537/railway",
     "PORT": "3001",
     "JWT_SECRET": "unaClaveMuySegura",
-    "NEXT_PUBLIC_API_URL": "https://${VERCEL_URL}"
+    "NEXT_PUBLIC_API_URL": "https://${VERCEL_URL}/api"
   }
 }
