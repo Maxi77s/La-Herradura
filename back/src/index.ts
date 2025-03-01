@@ -4,8 +4,6 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import appointmentRouter from './routers/appointmentRouter';
 
-require('dotenv').config();
-
 dotenv.config();
 
 const app = express();
@@ -52,8 +50,5 @@ app.use(express.json());
 app.use('/api/admin', adminRouter);
 app.use('/api/appointments', appointmentRouter);
 
-const PORT = process.env.PORT || 3001;
-
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});
+// 🔹 Vercel necesita exportar la app en lugar de usar app.listen()
+export default app;
