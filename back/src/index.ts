@@ -1,14 +1,14 @@
-import express, { Request, Response, NextFunction } from 'express';
-import adminRouter from './routers/adminRouter';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import appointmentRouter from './routers/appointmentRouter';
+import express, { Request, Response, NextFunction } from "express";
+import adminRouter from "./routers/adminRouter";
+import dotenv from "dotenv";
+import cors from "cors";
+import appointmentRouter from "./routers/appointmentRouter";
 
 dotenv.config();
 
 const app = express();
 
-// Configuración de CORS para permitir cualquier subdominio de Vercel y localhost
+// Configuración de CORS
 const allowedOrigins = [
   "http://localhost:3000",
   "https://la-herradura-flax.vercel.app",
@@ -17,12 +17,10 @@ const allowedOrigins = [
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   const origin = req.headers.origin;
-
   if (!origin || allowedOrigins.some(o => (typeof o === "string" ? o === origin : o.test(origin)))) {
     res.setHeader("Access-Control-Allow-Origin", origin || "*");
   }
-
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE,PATCH, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
@@ -32,7 +30,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-// Middleware CORS global
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.some(o => (typeof o === "string" ? o === origin : o.test(origin)))) {
@@ -47,8 +44,8 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use('/api/admin', adminRouter);
-app.use('/api/appointments', appointmentRouter);
+app.use("/api/admin", adminRouter);
+app.use("/api/appointments", appointmentRouter);
 
-// 🔹 Vercel necesita exportar la app en lugar de usar app.listen()
+// 🚀 Exportamos `app` para que Vercel lo maneje
 export default app;
