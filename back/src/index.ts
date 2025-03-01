@@ -3,6 +3,7 @@ import adminRouter from './routers/adminRouter';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import appointmentRouter from './routers/appointmentRouter';
+require('dotenv').config();
 
 dotenv.config();
 

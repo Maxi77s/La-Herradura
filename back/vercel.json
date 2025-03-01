@@ -17,7 +17,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "front/$1"
+      "dest": "front/src/app/page.tsx"
     }
   ],
   "env": {
