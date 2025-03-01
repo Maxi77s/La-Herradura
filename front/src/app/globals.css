@@ -12,6 +12,9 @@ body {
   overflow-x: hidden;
   width: 100%;
 }
+html {
+  scroll-behavior: smooth;
+}
 
 @keyframes gradientAnimation {
   0% {

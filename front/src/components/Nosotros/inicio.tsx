@@ -22,7 +22,10 @@ const Inicio = () => {
   return (
     <>
       {/* Título principal */}
-      <div className="py-28">
+      <div 
+      id="nosotros"
+      className="py-28">
+        
         <motion.h1
           initial="hidden"
           animate="visible"
