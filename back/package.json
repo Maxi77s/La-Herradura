@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev src/index.ts",
     "build": "tsc",
-     "start": "env $(cat .envproduction | xargs) node dist/index.js"
+    "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
