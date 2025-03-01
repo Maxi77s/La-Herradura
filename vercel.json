@@ -17,13 +17,14 @@
     },
     {
       "src": "/(.*)",
-      "dest": "front"
+      "dest": "front/.next"
     }
+    
   ],
   "env": {
     "DATABASE_URL": "postgresql://postgres:ocgisoMPuszOuQdjfKIFqsUiKACgZCtP@metro.proxy.rlwy.net:28537/railway",
     "PORT": "3001",
     "JWT_SECRET": "unaClaveMuySegura",
-    "NEXT_PUBLIC_API_URL": "https://${VERCEL_URL}/api"
+    "NEXT_PUBLIC_API_URL": "https://la-herradura.vercel.app/api"
   }
 }
