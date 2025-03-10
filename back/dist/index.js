@@ -13,6 +13,7 @@ const app = (0, express_1.default)();
 const allowedOrigins = [
     "http://localhost:3000",
     "https://la-herradura-flax.vercel.app",
+    "https://la-herradura-production.up.railway.app", // Tu backend en Railway
     /\.vercel\.app$/
 ];
 app.use((req, res, next) => {
