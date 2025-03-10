@@ -18,6 +18,7 @@ const AppointmentsList: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [hiddenAppointments, setHiddenAppointments] = useState<Set<number>>(new Set());
   const router = useRouter();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   const checkAuth = () => {
     if (typeof window === "undefined") return null;
@@ -41,7 +42,7 @@ const AppointmentsList: React.FC = () => {
       if (!token) return;
 
       try {
-        const response = await fetch("http://localhost:3001/api/appointments", {
+        const response = await fetch(`${API_URL}/appointments`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -59,7 +60,7 @@ const AppointmentsList: React.FC = () => {
     };
 
     fetchAppointments();
-  }, []);
+  }, [API_URL]);
 
   const toggleAppointmentStatus = async (id: number | null, currentStatus: "active" | "canceled") => {
     if (id === null || id === undefined) {
@@ -72,7 +73,7 @@ const AppointmentsList: React.FC = () => {
     if (!token) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/api/appointments/${id}`, {
+      const response = await fetch(`${API_URL}/appointments/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -143,9 +144,7 @@ const AppointmentsList: React.FC = () => {
                 </button>
                 <div className="flex flex-col justify-between items-start space-y-2">
                   <p className="text-lg font-semibold text-white">{appointment.clientName}</p>
-                  <p className="text-sm text-gray-400">
-                    {appointment.date} - {appointment.time}
-                  </p>
+                  <p className="text-sm text-gray-400">{appointment.date} - {appointment.time}</p>
                   <p className="text-sm text-white">{appointment.description}</p>
                   <button
                     onClick={() => toggleAppointmentStatus(appointment.id!, appointment.status)}
