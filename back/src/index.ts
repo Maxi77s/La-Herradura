@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import adminRouter from './routers/adminRouter';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -11,9 +11,26 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:3000",
   "https://la-herradura-flax.vercel.app",
-  "https://la-herradura-production.up.railway.app", // <-- AGREGÁ ESTA TAMBIÉN
+  "https://la-herradura-production.up.railway.app", // Tu backend en Railway
   /\.vercel\.app$/
 ];
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const origin = req.headers.origin;
+
+  if (!origin || allowedOrigins.some(o => (typeof o === "string" ? o === origin : o.test(origin)))) {
+    res.setHeader("Access-Control-Allow-Origin", origin || "*");
+  }
+
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  if (req.method === "OPTIONS") {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -23,14 +40,14 @@ app.use(cors({
       callback(new Error("No permitido por CORS"));
     }
   },
-  methods: "GET,POST,PUT,DELETE,OPTIONS",
+  methods: "GET, POST, PUT, DELETE, OPTIONS",
   allowedHeaders: "Content-Type, Authorization",
   credentials: true
 }));
 
 app.use(express.json());
-
 app.use('/api/admin', adminRouter);
 app.use('/api/appointments', appointmentRouter);
 
+// 🚀 Vercel necesita que exportemos `app`
 export default app;
