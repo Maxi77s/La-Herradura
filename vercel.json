@@ -13,18 +13,21 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "back/dist/index.js"
+      "dest": "back/src/index.ts"
     },
     {
-      "src": "/(.*)",
-      "dest": "front/.next"
+      "src": "/",
+      "dest": "front/src/app/page.tsx"
+    },
+    {
+      "src": "/api/appointments",
+      "dest": "back/src/routers/appointmentRouter.ts"
     }
-    
   ],
   "env": {
     "DATABASE_URL": "postgresql://postgres:ocgisoMPuszOuQdjfKIFqsUiKACgZCtP@metro.proxy.rlwy.net:28537/railway",
     "PORT": "3001",
     "JWT_SECRET": "unaClaveMuySegura",
-    "NEXT_PUBLIC_API_URL": "https://la-herradura.vercel.app/api"
+    "NEXT_PUBLIC_API_URL": "https://la-herradura-flax.vercel.app/"
   }
 }
