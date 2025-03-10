@@ -8,7 +8,7 @@ dotenv.config();
 
 const app = express();
 
-// Configuración de CORS para permitir cualquier subdominio de Vercel y localhost
+// Configuración de CORS para permitir cualquier subdominio de Vercel y Railway
 const allowedOrigins = [
   "http://localhost:3000",
   "https://la-herradura-flax.vercel.app",
@@ -16,6 +16,7 @@ const allowedOrigins = [
   /\.vercel\.app$/ // Permite cualquier subdominio en Vercel
 ];
 
+// Middleware personalizado para manejar preflight y headers manuales
 app.use((req: Request, res: Response, next: NextFunction) => {
   const origin = req.headers.origin;
 
@@ -33,6 +34,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   }
 });
 
+// Configuración oficial de CORS (por si otros clientes lo usan)
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.some(o => (typeof o === "string" ? o === origin : o.test(origin)))) {
@@ -47,11 +49,18 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
+// Endpoint raíz para verificar que el servidor responde
+app.get('/', (req: Request, res: Response) => {
+  res.send('🚀 Servidor funcionando correctamente en Railway ✔️');
+});
+
+// Rutas principales
 app.use('/api/admin', adminRouter);
 app.use('/api/appointments', appointmentRouter);
 
-// Solo en desarrollo local
-const PORT = process.env.PORT || 3001;
+// Puerto del servidor
+const PORT = Number(process.env.PORT) || 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`✅ Servidor corriendo en http://localhost:${PORT} o en Railway ✔️`);
 });

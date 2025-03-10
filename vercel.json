@@ -3,7 +3,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "back/src/index.ts"
+      "dest": "back/src/server.ts"
     },
     {
       "src": "/(.*)",
