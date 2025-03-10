@@ -12,16 +12,12 @@
   ],
   "routes": [
     {
-      "src": "back/src/(.*)",
-      "dest": "/index.ts"
+      "src": "/api/(.*)",
+      "dest": "back/src/server.ts"
     },
     {
-      "src": "front/(.*)",
-      "dest": "src/app/page.tsx"
-    },
-    {
-      "src": "/api/appointments",
-      "dest": "back/src/routers/appointmentRouter.ts"
+      "src": "/(.*)",
+      "dest": "front/.next/$1"
     }
   ],
   "env": {
