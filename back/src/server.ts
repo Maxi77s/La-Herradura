@@ -14,11 +14,25 @@ const allowedOrigins = [
   "https://la-herradura-production.up.railway.app",
 ];
 
+app.use((req, res, next) => {
+  console.log("🔍 Origin de la petición:", req.headers.origin);
+  next();
+});
+
 app.use(cors({
-  origin: allowedOrigins,
+  origin: (origin, callback) => {
+    console.log("🛠️ Comprobando origen:", origin);
+    if (!origin || allowedOrigins.includes(origin)) {
+      console.log("✅ Origen permitido:", origin);
+      callback(null, true);
+    } else {
+      console.log("❌ Origen bloqueado:", origin);
+      callback(new Error("No permitido por CORS"));
+    }
+  },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true, // ✅ Permite enviar cookies o tokens
+  credentials: true,
 }));
 
 // Middleware para manejar preflight requests (OPTIONS)
@@ -27,12 +41,10 @@ app.options("*", cors());
 // Middleware JSON
 app.use(express.json());
 
-// Verificar si el servidor responde
 app.get('/', (req: Request, res: Response) => {
   res.send('🚀 Servidor funcionando correctamente en Railway ✔️');
 });
 
-// Rutas principales
 app.use('/api/admin', adminRouter);
 app.use('/api/appointments', appointmentRouter);
 
