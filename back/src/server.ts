@@ -43,12 +43,20 @@ app.options("*", cors());
 app.use(express.json());
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('🚀 Servidor funcionando correctamente en Railway ✔️');
+  res.json({ message: '🚀 Servidor funcionando correctamente en Railway ✔️' }); // Cambié a JSON
 });
 
+// Rutas
 app.use('/api/admin', adminRouter);
 app.use('/api/appointments', appointmentRouter);
 
+// Middleware global para manejo de errores
+app.use((err, req: Request, res: Response, next) => {
+  console.error(err); // Log de error en el servidor
+  res.status(500).json({ error: 'Hubo un error interno en el servidor' }); // Respuesta JSON en caso de error
+});
+
+// Iniciar el servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`✅ Servidor corriendo en http://localhost:${PORT} o en Railway ✔️`);
