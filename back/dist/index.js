@@ -47,5 +47,9 @@ app.use('/api/appointments', appointmentRouter_1.default);
 app.get('/', (req, res) => {
     res.send('🚀 Servidor funcionando correctamente en Railway ✔️');
 });
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
+});
 // Exportar app si Railway lo requiere
 exports.default = app;
