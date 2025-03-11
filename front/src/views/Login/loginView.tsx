@@ -8,6 +8,7 @@ const Login = () => {
   const [error, setError] = useState("");
   const router = useRouter();
 
+  // Obtiene la URL de la API de las variables de entorno
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   const validateInputs = () => {
@@ -26,33 +27,31 @@ const Login = () => {
     e.preventDefault();
     setError("");
 
-    if (!validateInputs()) return;
-
-    console.log("API_URL:", API_URL); // Verifica que la API_URL esté bien definida
+    if (!validateInputs()) return; // Si la validación falla, detiene la ejecución.
 
     try {
       const res = await fetch(`${API_URL}/api/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // ⚠️ NECESARIO PARA QUE FUNCIONE CORS CON AUTENTICACIÓN
         body: JSON.stringify({ username, password }),
       });
+      console.log("API URL:", API_URL);
 
-      if (!res.ok) {
+      if (res.ok) {
         const data = await res.json();
-        throw new Error(data.message || "Usuario o contraseña incorrectos.");
+        
+        // Guardar el estado de sesión y el token en sessionStorage
+        sessionStorage.setItem("isLoggedIn", "true");
+        sessionStorage.setItem("token", data.token);
+
+        // Redirigir al panel de administración
+        router.push("/Admin");
+      } else {
+        const data = await res.json();
+        setError(data.message || "Usuario o contraseña incorrectos."); // Muestra mensaje de error del backend
       }
-
-      const data = await res.json();
-      
-      // Guardar el token en sessionStorage
-      sessionStorage.setItem("isLoggedIn", "true");
-      sessionStorage.setItem("token", data.token);
-
-      router.push("/Admin");
-    } catch (err: any) {
-      console.error("Error de autenticación:", err);
-      setError(err.message || "Error de conexión. Intenta nuevamente más tarde.");
+    } catch (err) {
+      setError("Error de conexión. Intenta nuevamente más tarde.");
     }
   };
 
