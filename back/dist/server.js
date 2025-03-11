@@ -10,32 +10,16 @@ const cors_1 = __importDefault(require("cors"));
 const appointmentRouter_1 = __importDefault(require("./routers/appointmentRouter"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-// Configuración de CORS para permitir cualquier subdominio de Vercel y Railway
+// Lista de dominios permitidos
 const allowedOrigins = [
     "http://localhost:3000",
     "https://la-herradura-flax.vercel.app",
     "https://la-herradura-production.up.railway.app",
-    /\.vercel\.app$/ // Permite cualquier subdominio en Vercel
 ];
-// Middleware personalizado para manejar preflight y headers manuales
-app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    if (!origin || allowedOrigins.some(o => (typeof o === "string" ? o === origin : o.test(origin)))) {
-        res.setHeader("Access-Control-Allow-Origin", origin || "*");
-    }
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    if (req.method === "OPTIONS") {
-        res.sendStatus(200);
-    }
-    else {
-        next();
-    }
-});
-// Configuración oficial de CORS (por si otros clientes lo usan)
+// Configuración de CORS
 app.use((0, cors_1.default)({
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.some(o => (typeof o === "string" ? o === origin : o.test(origin)))) {
+        if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         }
         else {
@@ -43,7 +27,12 @@ app.use((0, cors_1.default)({
         }
     },
     methods: "GET, POST, PUT, DELETE, OPTIONS",
-    allowedHeaders: "Content-Type, Authorization",
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
+}));
+// Manejo de preflight requests (OPTIONS)
+app.options('*', (0, cors_1.default)({
+    origin: allowedOrigins,
     credentials: true
 }));
 app.use(express_1.default.json());
