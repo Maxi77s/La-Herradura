@@ -10,25 +10,25 @@ const app = express();
 
 // Configuración de CORS para permitir cualquier subdominio de Vercel y Railway
 const allowedOrigins = [
-  "http://localhost:3000",
-  "https://la-herradura-flax.vercel.app",
-  "https://la-herradura-production.up.railway.app",
-  "https://postgres-production-cad4.up.railway.app/",
-  /\.vercel\.app$/ // Permite cualquier subdominio en Vercel
+  "http://localhost:3000",  // Localhost para desarrollo
+  "https://la-herradura-flax.vercel.app",  // Subdominio específico de Vercel
+  "https://la-herradura-production.up.railway.app",  // URL de producción en Railway
+  /\.vercel\.app$/,  // Permite cualquier subdominio en Vercel
 ];
 
 // Configuración de CORS
 app.use(cors({
   origin: (origin, callback) => {
+    // Si la solicitud no tiene origen o si el origen está permitido
     if (!origin || allowedOrigins.some(o => (typeof o === "string" ? o === origin : o.test(origin)))) {
-      callback(null, true);
+      callback(null, true);  // Permite la solicitud
     } else {
-      callback(new Error("No permitido por CORS"));
+      callback(new Error("No permitido por CORS"));  // Rechaza la solicitud
     }
   },
-  methods: "GET, POST, PUT, DELETE, OPTIONS",
-  allowedHeaders: "Content-Type, Authorization",
-  credentials: true
+  methods: "GET, POST, PUT, DELETE, OPTIONS",  // Métodos permitidos
+  allowedHeaders: "Content-Type, Authorization",  // Encabezados permitidos
+  credentials: true,  // Permite el envío de cookies
 }));
 
 app.use(express.json());
