@@ -13,6 +13,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://la-herradura-flax.vercel.app",
   "https://la-herradura-production.up.railway.app",
+  "https://postgres-production-cad4.up.railway.app/",
   /\.vercel\.app$/ // Permite cualquier subdominio en Vercel
 ];
 
