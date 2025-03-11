@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response } from 'express';
 import adminRouter from './routers/adminRouter';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -16,25 +16,7 @@ const allowedOrigins = [
   /\.vercel\.app$/ // Permite cualquier subdominio en Vercel
 ];
 
-// Middleware personalizado para manejar preflight y headers manuales
-app.use((req: Request, res: Response, next: NextFunction) => {
-  const origin = req.headers.origin;
-
-  if (!origin || allowedOrigins.some(o => (typeof o === "string" ? o === origin : o.test(origin)))) {
-    res.setHeader("Access-Control-Allow-Origin", origin || "*");
-  }
-
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  if (req.method === "OPTIONS") {
-    res.sendStatus(200);
-  } else {
-    next();
-  }
-});
-
-// Configuración oficial de CORS (por si otros clientes lo usan)
+// Configuración de CORS
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.some(o => (typeof o === "string" ? o === origin : o.test(origin)))) {
