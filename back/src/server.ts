@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import adminRouter from './routers/adminRouter';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -51,7 +51,7 @@ app.use('/api/admin', adminRouter);
 app.use('/api/appointments', appointmentRouter);
 
 // Middleware global para manejo de errores
-app.use((err, req: Request, res: Response, next) => {
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err); // Log de error en el servidor
   res.status(500).json({ error: 'Hubo un error interno en el servidor' }); // Respuesta JSON en caso de error
 });
