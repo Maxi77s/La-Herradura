@@ -14,25 +14,38 @@ const allowedOrigins = [
     "http://localhost:3000",
     "https://la-herradura-flax.vercel.app",
     "https://la-herradura-production.up.railway.app",
+    "https://la-herradura-production.up.railway.app/api/admin/login"
 ];
+app.use((req, res, next) => {
+    console.log("🔍 Origin de la petición:", req.headers.origin);
+    next();
+});
 app.use((0, cors_1.default)({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+        console.log("🛠️ Comprobando origen:", origin);
+        if (!origin || allowedOrigins.includes(origin)) {
+            console.log("✅ Origen permitido:", origin);
+            callback(null, true);
+        }
+        else {
+            console.log("❌ Origen bloqueado:", origin);
+            callback(new Error("No permitido por CORS"));
+        }
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true, // ✅ Permite enviar cookies o tokens
+    credentials: true,
 }));
 // Middleware para manejar preflight requests (OPTIONS)
 app.options("*", (0, cors_1.default)());
 // Middleware JSON
 app.use(express_1.default.json());
-// Verificar si el servidor responde
 app.get('/', (req, res) => {
     res.send('🚀 Servidor funcionando correctamente en Railway ✔️');
 });
-// Rutas principales
 app.use('/api/admin', adminRouter_1.default);
 app.use('/api/appointments', appointmentRouter_1.default);
-const PORT = Number(process.env.PORT) || 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`✅ Servidor corriendo en http://localhost:${PORT} o en Railway ✔️`);
 });

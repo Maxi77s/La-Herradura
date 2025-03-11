@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
-import adminRouter from './routers/adminRouter';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import adminRouter from './routers/adminRouter';
 import appointmentRouter from './routers/appointmentRouter';
 
 dotenv.config();
@@ -11,20 +11,25 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:3000",
   "https://la-herradura-flax.vercel.app",
-  "https://la-herradura-production.up.railway.app", // Tu backend en Railway
-  /\.vercel\.app$/
+  "https://la-herradura-production.up.railway.app"
 ];
 
+// Middleware de CORS optimizado
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, origin); // Devolver origen específico en vez de `true`
+    } else {
+      callback(new Error("No permitido por CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
+// Middleware para manejar preflight requests (OPTIONS)
 app.use((req: Request, res: Response, next: NextFunction) => {
-  const origin = req.headers.origin;
-
-  if (!origin || allowedOrigins.some(o => (typeof o === "string" ? o === origin : o.test(origin)))) {
-    res.setHeader("Access-Control-Allow-Origin", origin || "*");
-  }
-
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
   if (req.method === "OPTIONS") {
     res.sendStatus(200);
   } else {
@@ -32,22 +37,17 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.some(o => (typeof o === "string" ? o === origin : o.test(origin)))) {
-      callback(null, true);
-    } else {
-      callback(new Error("No permitido por CORS"));
-    }
-  },
-  methods: "GET, POST, PUT, DELETE, OPTIONS",
-  allowedHeaders: "Content-Type, Authorization",
-  credentials: true
-}));
-
+// Middleware para parsear JSON
 app.use(express.json());
+
+// Rutas
 app.use('/api/admin', adminRouter);
 app.use('/api/appointments', appointmentRouter);
 
-// 🚀 Vercel necesita que exportemos `app`
+// Ruta raíz para verificar que el backend está funcionando
+app.get('/', (req: Request, res: Response) => {
+  res.send('🚀 Servidor funcionando correctamente en Railway ✔️');
+});
+
+// Exportar app si Railway lo requiere
 export default app;
