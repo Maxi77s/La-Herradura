@@ -41,8 +41,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(express.json());
 
 // Rutas
-app.use('/api/admin', adminRouter);
-app.use('/api/appointments', appointmentRouter);
+app.use('/api/', adminRouter);
+app.use('/api/', appointmentRouter);
 
 // Ruta raíz para verificar que el backend está funcionando
 app.get('/', (req: Request, res: Response) => {
