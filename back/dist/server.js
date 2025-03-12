@@ -14,24 +14,24 @@ if (!process.env.DATABASE_PUBLIC_URL) {
     throw new Error("❌ ERROR: DATABASE_PUBLIC_URL no está configurada en las variables de entorno.");
 }
 if (!process.env.JWT_SECRET) {
-    throw new Error("❌ ERROR: JWT_SECRET no está configurado en las variables de entorno.");
+    throw new Error("❌ ERROR: JWT_SECRET no está configurada en las variables de entorno.");
 }
 // Mostrar variables de entorno (solo para depuración, eliminar en producción)
 console.log("🔍 DATABASE_PUBLIC_URL:", process.env.DATABASE_PUBLIC_URL);
 console.log("🔍 JWT_SECRET:", process.env.JWT_SECRET);
 const app = (0, express_1.default)();
-// Middleware para manejar preflight requests (OPTIONS)
-app.options("*", (0, cors_1.default)());
 // CORS Options
 const corsOptions = {
-    origin: "https://la-herradura-flax.vercel.app", // Cambia por la URL de tu frontend en Vercel
+    origin: "https://la-herradura-flax.vercel.app", // Cambia si tu frontend cambia de dominio
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
 };
-// Configuración de CORS
+// Configuración de CORS global
 app.use((0, cors_1.default)(corsOptions));
-// Middleware para verificar el origen de las peticiones (para depuración)
+// Manejar preflight requests (OPTIONS) con las mismas opciones
+app.options("*", (0, cors_1.default)(corsOptions));
+// Middleware para verificar el origen de las peticiones (opcional, para depurar)
 app.use((req, res, next) => {
     console.log("🔍 Origin de la petición:", req.headers.origin);
     next();
@@ -42,7 +42,7 @@ app.use(express_1.default.json());
 app.get("/", (req, res) => {
     res.json({ message: "🚀 Servidor funcionando correctamente en Railway ✔️" });
 });
-// Rutas
+// Rutas API
 app.use("/api/admin", adminRouter_1.default);
 app.use("/api/appointments", appointmentRouter_1.default);
 // Middleware global para manejo de errores

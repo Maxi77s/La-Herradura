@@ -21,6 +21,7 @@
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.13.1",
     "prisma": "^6.3.0",
+    "psql": "^0.0.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.3",
     "undici-types": "^6.19.8"
