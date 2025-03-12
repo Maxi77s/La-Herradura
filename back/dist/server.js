@@ -20,35 +20,22 @@ if (!process.env.JWT_SECRET) {
 console.log("🔍 DATABASE_PUBLIC_URL:", process.env.DATABASE_PUBLIC_URL);
 console.log("🔍 JWT_SECRET:", process.env.JWT_SECRET);
 const app = (0, express_1.default)();
-// Lista de orígenes permitidos
-const allowedOrigins = [
-    "http://localhost:3001",
-    "https://la-herradura-flax.vercel.app",
-    "https://la-herradura-production.up.railway.app",
-];
+// Middleware para manejar preflight requests (OPTIONS)
+app.options("*", (0, cors_1.default)());
+// CORS Options
+const corsOptions = {
+    origin: "https://la-herradura-flax.vercel.app", // Cambia por la URL de tu frontend en Vercel
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+};
+// Configuración de CORS
+app.use((0, cors_1.default)(corsOptions));
 // Middleware para verificar el origen de las peticiones (para depuración)
 app.use((req, res, next) => {
     console.log("🔍 Origin de la petición:", req.headers.origin);
     next();
 });
-// Configuración de CORS
-app.use((0, cors_1.default)({
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            console.log("✅ Origen permitido:", origin);
-            callback(null, true);
-        }
-        else {
-            console.log("❌ Origen bloqueado:", origin);
-            callback(new Error("No permitido por CORS"));
-        }
-    },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-}));
-// Middleware para manejar preflight requests (OPTIONS)
-app.options("*", (0, cors_1.default)());
 // Middleware JSON
 app.use(express_1.default.json());
 // Ruta principal
