@@ -4,38 +4,42 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const adminRouter_1 = __importDefault(require("./routers/adminRouter"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
+const adminRouter_1 = __importDefault(require("./routers/adminRouter"));
 const appointmentRouter_1 = __importDefault(require("./routers/appointmentRouter"));
-// Cargar las variables de entorno
+// Cargar variables de entorno
 dotenv_1.default.config();
-// Verificar que la variable de entorno se cargue correctamente
-console.log("DATABASE_PUBLIC_URL:", process.env.DATABASE_PUBLIC_URL); // Mostrar URL de la base de datos
-console.log("JWT_SECRET:", process.env.JWT_SECRET); // Verificar si JWT_SECRET está configurado
+if (!process.env.DATABASE_PUBLIC_URL) {
+    throw new Error("❌ ERROR: DATABASE_PUBLIC_URL no está configurada en las variables de entorno.");
+}
+if (!process.env.JWT_SECRET) {
+    throw new Error("❌ ERROR: JWT_SECRET no está configurado en las variables de entorno.");
+}
+// Mostrar variables de entorno (solo para depuración, eliminar en producción)
+console.log("🔍 DATABASE_PUBLIC_URL:", process.env.DATABASE_PUBLIC_URL);
+console.log("🔍 JWT_SECRET:", process.env.JWT_SECRET);
 const app = (0, express_1.default)();
-// Definir los orígenes permitidos para CORS
+// Lista de orígenes permitidos
 const allowedOrigins = [
-    "http://localhost:3000",
+    "http://localhost:3001",
     "https://la-herradura-flax.vercel.app",
     "https://la-herradura-production.up.railway.app",
-    "https://la-herradura-production.up.railway.app/api/admin/login"
 ];
-// Verificar el origen de las peticiones
+// Middleware para verificar el origen de las peticiones (para depuración)
 app.use((req, res, next) => {
-    console.log("🔍 Origin de la petición:", req.headers.origin); // Log para verificar el origen
+    console.log("🔍 Origin de la petición:", req.headers.origin);
     next();
 });
 // Configuración de CORS
 app.use((0, cors_1.default)({
     origin: (origin, callback) => {
-        console.log("🛠️ Comprobando origen:", origin); // Verificar origen
         if (!origin || allowedOrigins.includes(origin)) {
-            console.log("✅ Origen permitido:", origin); // Origen permitido
+            console.log("✅ Origen permitido:", origin);
             callback(null, true);
         }
         else {
-            console.log("❌ Origen bloqueado:", origin); // Origen bloqueado
+            console.log("❌ Origen bloqueado:", origin);
             callback(new Error("No permitido por CORS"));
         }
     },
@@ -48,16 +52,16 @@ app.options("*", (0, cors_1.default)());
 // Middleware JSON
 app.use(express_1.default.json());
 // Ruta principal
-app.get('/', (req, res) => {
-    res.json({ message: '🚀 Servidor funcionando correctamente en Railway ✔️' });
+app.get("/", (req, res) => {
+    res.json({ message: "🚀 Servidor funcionando correctamente en Railway ✔️" });
 });
 // Rutas
-app.use('/api/admin', adminRouter_1.default);
-app.use('/api/appointments', appointmentRouter_1.default);
+app.use("/api/admin", adminRouter_1.default);
+app.use("/api/appointments", appointmentRouter_1.default);
 // Middleware global para manejo de errores
 app.use((err, req, res, next) => {
-    console.error("Error ocurrido:", err); // Log detallado del error
-    res.status(500).json({ error: 'Hubo un error interno en el servidor' }); // Respuesta JSON en caso de error
+    console.error("❌ Error ocurrido:", err.message || err);
+    res.status(err.status || 500).json({ error: err.message || "Hubo un error interno en el servidor" });
 });
 // Iniciar el servidor
 const PORT = process.env.PORT || 3000;

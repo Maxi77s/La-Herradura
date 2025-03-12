@@ -1,54 +1,69 @@
 import { prisma } from "../database/prisma";
+import pool from "../config/database";
+
+interface CreateAppointmentData {
+  date: string;
+  time: string;
+  status: string;
+  description: string;
+  clientName: string;
+}
 
 export const AppointmentService = {
-  async createAppointment(data: {
-    date: string;
-    time: string;
-    status: string;
-    description: string;
-    clientName: string;
-  }) {
+  async createAppointment(data: CreateAppointmentData) {
     const { date, time, status, description, clientName } = data;
     const appointmentDate = new Date(date);
     if (isNaN(appointmentDate.getTime())) {
       throw new Error("Fecha inválida");
     }
-    return prisma.appointment.create({
-      data: {
-        date: appointmentDate,
-        time,
-        status,
-        description,
-        clientName,
-      },
-    });
+
+    try {
+      return await prisma.appointment.create({
+        data: { date: appointmentDate, time, status, description, clientName },
+      });
+    } catch (error) {
+      console.error("Error al crear la cita:", error);
+      throw new Error("No se pudo crear la cita");
+    } finally {
+      // Asegurarse de cerrar la conexión de Prisma
+      await prisma.$disconnect();
+    }
   },
 
   async getAppointments() {
-    return await prisma.appointment.findMany({
-      select: {
-        id: true, // Asegúrate de incluir el campo id
-        date: true,
-        time: true,
-        status: true,
-        description: true,
-        clientName: true,
-      },
-    });
+    try {
+      const result = await pool.query("SELECT * FROM Appointments;");
+      return result.rows;
+    } catch (error) {
+      console.error("Error al obtener citas:", error);
+      throw new Error("No se pudieron obtener las citas");
+    }
   },
 
-  // Función para obtener una cita por ID
   async getAppointmentById(id: number) {
-    return await prisma.appointment.findUnique({
-      where: { id },
-    });
+    try {
+      return await prisma.appointment.findUnique({ where: { id } });
+    } catch (error) {
+      console.error("Error al obtener la cita:", error);
+      throw new Error("No se pudo obtener la cita");
+    } finally {
+      // Asegurarse de cerrar la conexión de Prisma
+      await prisma.$disconnect();
+    }
   },
 
-  // Función para actualizar el estado de una cita
   async updateAppointmentStatus(id: number, status: "active" | "canceled") {
-    return await prisma.appointment.update({
-      where: { id },
-      data: { status },
-    });
+    try {
+      return await prisma.appointment.update({
+        where: { id },
+        data: { status },
+      });
+    } catch (error) {
+      console.error("Error al actualizar el estado de la cita:", error);
+      throw new Error("No se pudo actualizar la cita");
+    } finally {
+      // Asegurarse de cerrar la conexión de Prisma
+      await prisma.$disconnect();
+    }
   },
 };

@@ -41,8 +41,8 @@ app.use((req, res, next) => {
 // Middleware para parsear JSON
 app.use(express_1.default.json());
 // Rutas
-app.use('/api/admin', adminRouter_1.default);
-app.use('/api/appointments', appointmentRouter_1.default);
+app.use('/admin', adminRouter_1.default);
+app.use('/appointments', appointmentRouter_1.default);
 // Ruta raíz para verificar que el backend está funcionando
 app.get('/', (req, res) => {
     res.send('🚀 Servidor funcionando correctamente en Railway ✔️');

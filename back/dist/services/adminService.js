@@ -13,8 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminService = void 0;
-// adminService.ts
 const prisma_1 = require("../database/prisma");
+const database_1 = __importDefault(require("../config/database"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const SECRET_KEY = process.env.JWT_SECRET || 'secretoSuperSeguro';
@@ -36,6 +36,10 @@ exports.AdminService = {
                 console.error('Error al crear el administrador:', error);
                 throw new Error('Error al crear el administrador');
             }
+            finally {
+                // Asegurarse de cerrar la conexión de Prisma
+                yield prisma_1.prisma.$disconnect();
+            }
         });
     },
     authenticateAdmin(username, password) {
@@ -52,6 +56,22 @@ exports.AdminService = {
                 console.error('Error en autenticación del administrador:', error);
                 return null;
             }
+            finally {
+                // Asegurarse de cerrar la conexión de Prisma
+                yield prisma_1.prisma.$disconnect();
+            }
         });
     },
+    getAdmins() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield database_1.default.query("SELECT id, username FROM Admin;");
+                return result.rows;
+            }
+            catch (error) {
+                console.error('Error al obtener administradores:', error);
+                throw new Error('Error al obtener administradores');
+            }
+        });
+    }
 };

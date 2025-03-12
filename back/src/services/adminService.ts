@@ -1,6 +1,5 @@
-
-// adminService.ts
 import { prisma } from '../database/prisma';
+import pool from '../config/database';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -23,6 +22,9 @@ export const AdminService = {
     } catch (error) {
       console.error('Error al crear el administrador:', error);
       throw new Error('Error al crear el administrador');
+    } finally {
+      // Asegurarse de cerrar la conexión de Prisma
+      await prisma.$disconnect();
     }
   },
 
@@ -38,6 +40,19 @@ export const AdminService = {
     } catch (error) {
       console.error('Error en autenticación del administrador:', error);
       return null;
+    } finally {
+      // Asegurarse de cerrar la conexión de Prisma
+      await prisma.$disconnect();
     }
   },
+
+  async getAdmins() {
+    try {
+      const result = await pool.query("SELECT id, username FROM Admin;");
+      return result.rows;
+    } catch (error) {
+      console.error('Error al obtener administradores:', error);
+      throw new Error('Error al obtener administradores');
+    }
+  }
 };
