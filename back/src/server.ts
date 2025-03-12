@@ -16,9 +16,7 @@ const app = express();
 // Definir los orígenes permitidos para CORS
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://la-herradura-flax.vercel.app",
-  "https://la-herradura-production.up.railway.app",
-  "https://la-herradura-production.up.railway.app/api/admin/login"
+  "https://la-herradura-flax.vercel.app/",
 ];
 
 // Verificar el origen de las peticiones
