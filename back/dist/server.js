@@ -27,20 +27,32 @@ const corsOptions = {
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
 };
+// Middleware JSON primero
+app.use(express_1.default.json());
 // Configuración de CORS global
 app.use((0, cors_1.default)(corsOptions));
-// Manejar preflight requests (OPTIONS) con las mismas opciones
-app.options("*", (0, cors_1.default)(corsOptions));
-// Middleware para verificar el origen de las peticiones (opcional, para depurar)
-app.use((req, res, next) => {
-    console.log("🔍 Origin de la petición:", req.headers.origin);
-    next();
-});
-// Middleware JSON
-app.use(express_1.default.json());
+// Middleware adicional para asegurarse que todos los headers CORS estén presentes SIEMPRE
+const corsMiddleware = (req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "https://la-herradura-flax.vercel.app");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.header("Access-Control-Allow-Credentials", "true");
+    if (req.method === "OPTIONS") {
+        res.sendStatus(204); // <-- sin "return", solo ejecuta y termina
+    }
+    else {
+        next();
+    }
+};
+app.use(corsMiddleware);
 // Ruta principal
 app.get("/", (req, res) => {
     res.json({ message: "🚀 Servidor funcionando correctamente en Railway ✔️" });
+});
+// Middleware para ver origen de peticiones (solo para debug)
+app.use((req, res, next) => {
+    console.log("🔍 Origin de la petición:", req.headers.origin);
+    next();
 });
 // Rutas API
 app.use("/api/admin", adminRouter_1.default);

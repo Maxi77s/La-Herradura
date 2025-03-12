@@ -11,16 +11,20 @@ const adminRouter = (0, express_1.Router)();
 // Opciones CORS específicas para rutas sensibles como /login
 const corsOptions = {
     origin: "https://la-herradura-flax.vercel.app",
+    methods: ["POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
 };
 // Ruta de prueba
 adminRouter.get("/", (req, res) => {
     res.send("Admin API funcionando correctamente");
 });
+// Manejo explícito de OPTIONS para login
+adminRouter.options('/login', (0, cors_1.default)(corsOptions), (req, res) => {
+    res.sendStatus(204);
+});
 // Ruta de registro
 adminRouter.post('/register', (0, asyncHandler_1.asyncHandler)(adminController_1.AdminController.createAdmin));
-// 🔥 PREVENTIVO: Habilitar preflight OPTIONS para /login
-adminRouter.options('/login', (0, cors_1.default)(corsOptions));
 // Ruta de login con CORS aplicado
 adminRouter.post('/login', (0, cors_1.default)(corsOptions), (req, res, next) => {
     console.log("🔥 Petición POST a /login recibida");
