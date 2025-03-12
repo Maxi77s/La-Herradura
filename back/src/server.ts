@@ -66,7 +66,11 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 // Iniciar el servidor
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
+if (!PORT) {
+  console.error("❌ ERROR: No se estableció el PORT en Railway");
+  process.exit(1);
+}
 app.listen(PORT, () => {
   console.log(`✅ Servidor corriendo en http://localhost:${PORT} o en Railway ✔️`);
 });
