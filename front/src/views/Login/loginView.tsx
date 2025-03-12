@@ -11,6 +11,7 @@ const Login = () => {
   // Obtiene la URL de la API de las variables de entorno
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+  // Validar los campos de entrada
   const validateInputs = () => {
     if (!username.trim()) {
       setError("El nombre de usuario es obligatorio.");
@@ -23,34 +24,50 @@ const Login = () => {
     return true;
   };
 
+  // Manejar el login
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError(""); // Limpiar el error previo
 
-    if (!validateInputs()) return; // Si la validación falla, detiene la ejecución.
+    // Validar los inputs antes de proceder
+    if (!validateInputs()) return;
 
     try {
+      // Log para verificar la URL de la API
+      console.log("API URL:", API_URL);
+
+      // Realizar la solicitud de login
       const res = await fetch(`${API_URL}/api/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
-      console.log("API URL:", API_URL);
+
+      // Log para verificar la respuesta del servidor
+      console.log("Respuesta del servidor:", res);
 
       if (res.ok) {
         const data = await res.json();
-        
+
+        // Log para verificar los datos recibidos
+        console.log("Datos del backend:", data);
+
         // Guardar el estado de sesión y el token en sessionStorage
         sessionStorage.setItem("isLoggedIn", "true");
         sessionStorage.setItem("token", data.token);
 
         // Redirigir al panel de administración
+        console.log("Redirigiendo a /admin");
         router.push("/Admin");
       } else {
         const data = await res.json();
-        setError(data.message || "Usuario o contraseña incorrectos."); // Muestra mensaje de error del backend
+        // Log para verificar el mensaje de error recibido
+        console.log("Error del backend:", data);
+        setError(data.message || "Usuario o contraseña incorrectos.");
       }
     } catch (err) {
+      // Capturar y loguear errores de conexión
+      console.error("Error de conexión o solicitud:", err);
       setError("Error de conexión. Intenta nuevamente más tarde.");
     }
   };
