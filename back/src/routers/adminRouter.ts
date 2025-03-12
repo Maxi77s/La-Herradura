@@ -7,6 +7,9 @@ adminRouter.get("/", (req, res) => {
     res.send("Admin API funcionando correctamente");
   });
 adminRouter.post('/register', asyncHandler(AdminController.createAdmin));
-adminRouter.post('/login', asyncHandler(AdminController.login));
+adminRouter.post('/login', (req, res, next) => {
+  console.log("🔥 Petición POST a /login recibida");
+  next();
+}, asyncHandler(AdminController.login));
 
 export default adminRouter;
