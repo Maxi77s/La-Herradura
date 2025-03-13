@@ -14,8 +14,19 @@ const client_1 = require("@prisma/client");
 exports.prisma = new client_1.PrismaClient();
 function getAppointments() {
     return __awaiter(this, void 0, void 0, function* () {
-        const appointments = yield exports.prisma.appointment.findMany(); // Aquí recuperas todas las citas
-        console.log(appointments); // Aquí deberías ver las citas con el campo `id` incluido
+        try {
+            yield exports.prisma.$connect();
+            console.log("✅ Conectado correctamente a la base de datos con Prisma");
+            const appointments = yield exports.prisma.appointment.findMany();
+            console.log("🗓️ Citas encontradas:", appointments);
+        }
+        catch (error) {
+            console.error("❌ Error al conectar con la base de datos o al consultar appointments:", error);
+            process.exit(1); // <- Esto detendrá el contenedor si falla, pero te dará logs claros
+        }
+        finally {
+            yield exports.prisma.$disconnect();
+        }
     });
 }
 getAppointments();
