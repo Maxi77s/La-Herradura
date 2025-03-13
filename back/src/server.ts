@@ -1,54 +1,42 @@
-import express, { Request, Response, NextFunction } from "express";
-import dotenv from "dotenv";
-import cors from "cors";
-import adminRouter from "./routers/adminRouter";
-import appointmentRouter from "./routers/appointmentRouter";
+import express from 'express';
+import adminRouter from './routers/adminRouter';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import appointmentRouter from './routers/appointmentRouter';
 
-// Cargar variables de entorno
 dotenv.config();
-
-// Validación de variables necesarias
-if (!process.env.DATABASE_PUBLIC_URL) {
-  throw new Error("❌ ERROR: DATABASE_PUBLIC_URL no está configurada.");
-}
-
-if (!process.env.JWT_SECRET) {
-  throw new Error("❌ ERROR: JWT_SECRET no está configurada.");
-}
-
-// Mostrar info por consola
-console.log("🔍 DATABASE_PUBLIC_URL:", process.env.DATABASE_PUBLIC_URL);
-console.log("🔍 JWT_SECRET:", process.env.JWT_SECRET);
 
 const app = express();
 
-// ✅ CORS — solo con esto alcanza
-app.use(cors({
-  origin: "https://la-herradura-flax.vercel.app", // Tu frontend en producción
-  credentials: true,
-}));
+// Configuración de CORS dinámica para permitir cualquier subdominio de Vercel
+const allowedOrigins = [
+  "http://localhost:3000",  // Desarrollo local
+  "https://la-herradura-flax.vercel.app", // Versión principal en Vercel
+  "https://la-herradura-production.up.railway.app",
+  /\.vercel\.app$/ // Permitir cualquier subdominio en Vercel
+];
 
-// ✅ Middleware para parsear JSON
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.some((o) => typeof o === "string" ? o === origin : o.test(origin))) {
+        callback(null, true);
+      } else {
+        callback(new Error("No permitido por CORS"));
+      }
+    },
+    credentials: true, // Permite autenticación basada en tokens
+    methods: ["GET", "POST", "PUT", "DELETE"], // Métodos permitidos
+    allowedHeaders: ["Content-Type", "Authorization"], // Headers permitidos
+  })
+);
+
 app.use(express.json());
+app.use('/api/admin', adminRouter);
+app.use('/api/appointments', appointmentRouter);
 
-// ✅ Rutas principales
-app.get("/", (req: Request, res: Response) => {
-  res.json({ message: "🚀 Servidor funcionando correctamente en Railway ✔️" });
-});
+const PORT = process.env.PORT || 3001;
 
-app.use("/api/admin", adminRouter);
-app.use("/api/appointments", appointmentRouter);
-
-// ✅ Manejo de errores
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error("❌ Error ocurrido:", err.message || err);
-  res.status(err.status || 500).json({ error: err.message || "Error interno del servidor" });
-});
-
-// ✅ Iniciar servidor
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Servidor corriendo en http://localhost:${PORT} o en Railway ✔️`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });
-
-export default app;
