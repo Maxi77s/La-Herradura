@@ -40,8 +40,9 @@ const Login = () => {
       const res = await fetch(`${API_URL}/api/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ username, password }),
+        credentials: "include",
+        mode: "cors",
       });
 
       // Log para verificar la respuesta del servidor
