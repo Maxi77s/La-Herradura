@@ -8,26 +8,25 @@ const adminController_1 = require("../controllers/adminController");
 const asyncHandler_1 = require("../middleware/asyncHandler");
 const cors_1 = __importDefault(require("cors"));
 const adminRouter = (0, express_1.Router)();
+// Opciones específicas para este router (si no están ya aplicadas globalmente)
 const corsOptions = {
-    origin: "https://la-herradura-flax.vercel.app",
+    origin: "https://la-herradura-flax.vercel.app", // tu frontend
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
 };
-// Aplica CORS a todas las rutas del router
+// Aplica CORS solo a las rutas que lo necesitan, o bien a todo el router
 adminRouter.use((0, cors_1.default)(corsOptions));
-// Ruta de prueba
+// Rutas
 adminRouter.get("/", (req, res) => {
     res.send("Admin API funcionando correctamente");
 });
-// Manejo explícito de OPTIONS para login
-adminRouter.options('/login', (req, res) => {
-    res.sendStatus(204);
-});
-// Ruta de registro
-adminRouter.post('/register', (0, asyncHandler_1.asyncHandler)(adminController_1.AdminController.createAdmin));
-// Ruta de login con log
-adminRouter.post('/login', (req, res, next) => {
+// Preflight OPTIONS (opcional si cors() está bien configurado)
+adminRouter.options("/login", (0, cors_1.default)(corsOptions));
+// Registro
+adminRouter.post("/register", (0, asyncHandler_1.asyncHandler)(adminController_1.AdminController.createAdmin));
+// Login con log
+adminRouter.post("/login", (req, res, next) => {
     console.log("🔥 Petición POST a /login recibida");
     next();
 }, (0, asyncHandler_1.asyncHandler)(adminController_1.AdminController.login));

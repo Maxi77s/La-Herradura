@@ -19,21 +19,20 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      console.log("🟢 Solicitud recibida de:", origin); // Debug para ver qué origen llega
+      console.log("🟢 Solicitud recibida de:", origin);
       if (!origin || allowedOrigins.includes(origin) || /\.vercel\.app$/.test(origin)) {
         callback(null, true);
       } else {
         callback(new Error("No permitido por CORS"));
       }
     },
-    credentials: true, // Permite el envío de cookies y autenticación
-    methods: ["GET", "POST", "PUT", "DELETE"], // Métodos permitidos
-    allowedHeaders: ["Content-Type", "Authorization"], // Headers permitidos
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-// Asegurar que las solicitudes OPTIONS sean manejadas correctamente
-app.options("*", cors());
+// NO PONER app.options("*", cors()); ← esa línea causaba conflicto
 
 // Middleware para parsear JSON
 app.use(express.json());
