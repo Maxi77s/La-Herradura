@@ -8,13 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppointmentService = void 0;
 const prisma_1 = require("../database/prisma");
-const database_1 = __importDefault(require("../config/database"));
 exports.AppointmentService = {
     createAppointment(data) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -25,24 +21,25 @@ exports.AppointmentService = {
             }
             try {
                 return yield prisma_1.prisma.appointment.create({
-                    data: { date: appointmentDate, time, status, description, clientName },
+                    data: {
+                        date: appointmentDate,
+                        time,
+                        status,
+                        description,
+                        clientName,
+                    },
                 });
             }
             catch (error) {
                 console.error("Error al crear la cita:", error);
                 throw new Error("No se pudo crear la cita");
             }
-            finally {
-                // Asegurarse de cerrar la conexión de Prisma
-                yield prisma_1.prisma.$disconnect();
-            }
         });
     },
     getAppointments() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield database_1.default.query("SELECT * FROM Appointments;");
-                return result.rows;
+                return yield prisma_1.prisma.appointment.findMany();
             }
             catch (error) {
                 console.error("Error al obtener citas:", error);
@@ -53,15 +50,13 @@ exports.AppointmentService = {
     getAppointmentById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield prisma_1.prisma.appointment.findUnique({ where: { id } });
+                return yield prisma_1.prisma.appointment.findUnique({
+                    where: { id },
+                });
             }
             catch (error) {
                 console.error("Error al obtener la cita:", error);
                 throw new Error("No se pudo obtener la cita");
-            }
-            finally {
-                // Asegurarse de cerrar la conexión de Prisma
-                yield prisma_1.prisma.$disconnect();
             }
         });
     },
@@ -76,10 +71,6 @@ exports.AppointmentService = {
             catch (error) {
                 console.error("Error al actualizar el estado de la cita:", error);
                 throw new Error("No se pudo actualizar la cita");
-            }
-            finally {
-                // Asegurarse de cerrar la conexión de Prisma
-                yield prisma_1.prisma.$disconnect();
             }
         });
     },

@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminService = void 0;
 const prisma_1 = require("../database/prisma");
-const database_1 = __importDefault(require("../config/database"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const SECRET_KEY = process.env.JWT_SECRET || 'secretoSuperSeguro';
@@ -62,16 +61,4 @@ exports.AdminService = {
             }
         });
     },
-    getAdmins() {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const result = yield database_1.default.query("SELECT id, username FROM Admin;");
-                return result.rows;
-            }
-            catch (error) {
-                console.error('Error al obtener administradores:', error);
-                throw new Error('Error al obtener administradores');
-            }
-        });
-    }
 };

@@ -1,5 +1,5 @@
 import { prisma } from '../database/prisma';
-import pool from '../config/database';
+
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -45,14 +45,4 @@ export const AdminService = {
       await prisma.$disconnect();
     }
   },
-
-  async getAdmins() {
-    try {
-      const result = await pool.query("SELECT id, username FROM Admin;");
-      return result.rows;
-    } catch (error) {
-      console.error('Error al obtener administradores:', error);
-      throw new Error('Error al obtener administradores');
-    }
-  }
-};
+  };

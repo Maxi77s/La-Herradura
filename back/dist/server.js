@@ -10,30 +10,36 @@ const cors_1 = __importDefault(require("cors"));
 const appointmentRouter_1 = __importDefault(require("./routers/appointmentRouter"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-// Configuración de CORS dinámica para permitir cualquier subdominio de Vercel
+// Lista de orígenes permitidos
 const allowedOrigins = [
-    "http://localhost:3000", // Desarrollo local
-    "https://la-herradura-flax.vercel.app", // Versión principal en Vercel
-    "https://la-herradura-production.up.railway.app",
-    /\.vercel\.app$/ // Permitir cualquier subdominio en Vercel
+    "http://localhost:3000",
+    "https://la-herradura-flax.vercel.app",
+    "https://la-herradura-production.up.railway.app"
 ];
+// Configuración de CORS
 app.use((0, cors_1.default)({
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.some((o) => typeof o === "string" ? o === origin : o.test(origin))) {
+        console.log("🟢 Solicitud recibida de:", origin); // Debug para ver qué origen llega
+        if (!origin || allowedOrigins.includes(origin) || /\.vercel\.app$/.test(origin)) {
             callback(null, true);
         }
         else {
             callback(new Error("No permitido por CORS"));
         }
     },
-    credentials: true, // Permite autenticación basada en tokens
+    credentials: true, // Permite el envío de cookies y autenticación
     methods: ["GET", "POST", "PUT", "DELETE"], // Métodos permitidos
     allowedHeaders: ["Content-Type", "Authorization"], // Headers permitidos
 }));
+// Asegurar que las solicitudes OPTIONS sean manejadas correctamente
+app.options("*", (0, cors_1.default)());
+// Middleware para parsear JSON
 app.use(express_1.default.json());
+// Rutas
 app.use('/api/admin', adminRouter_1.default);
 app.use('/api/appointments', appointmentRouter_1.default);
+// Puerto del servidor
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+    console.log(`✅ Servidor corriendo en http://localhost:${PORT} o en Railway`);
 });

@@ -10,7 +10,7 @@
     "postinstall": "npm run build"
   },
   "keywords": [],
-  "author": "", 
+  "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
