@@ -75,7 +75,7 @@ app.get('/appointments', async (req: Request, res: Response) => {
 const PORT = Number(process.env.PORT) || 3001;
 
 // Iniciar el servidor
-app.listen(PORT, async () => {
+app.listen(PORT,'0.0.0.0', async () => {
   try {
     await prisma.$connect();
     console.log(`✅ Servidor corriendo en http://localhost:${PORT} o en Railway`);
@@ -84,6 +84,3 @@ app.listen(PORT, async () => {
     process.exit(1);
   }
 });
-
-// Exportar app si Railway lo necesita
-export default app;
