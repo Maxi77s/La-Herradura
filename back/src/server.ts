@@ -20,15 +20,11 @@ console.log("🔍 JWT_SECRET:", process.env.JWT_SECRET);
 
 const app = express();
 
-// ✅ CORS correctamente configurado
-const corsOptions = {
+// 👉 SOLO ESTO PARA CORS
+app.use(cors({
   origin: "https://la-herradura-flax.vercel.app",
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
-};
-
-app.use(cors(corsOptions)); // <--- Solo este ya es suficiente
+}));
 
 // Middleware JSON
 app.use(express.json());
