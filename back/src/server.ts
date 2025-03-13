@@ -1,49 +1,60 @@
-import express from 'express';
-import adminRouter from './routers/adminRouter';
+import express, { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import adminRouter from './routers/adminRouter';
 import appointmentRouter from './routers/appointmentRouter';
 
 dotenv.config();
 
 const app = express();
 
-// Lista de orígenes permitidos
 const allowedOrigins = [
   "http://localhost:3000",
   "https://la-herradura-flax.vercel.app",
   "https://la-herradura-production.up.railway.app"
 ];
 
-// Configuración de CORS
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      console.log("🟢 Solicitud recibida de:", origin);
-      if (!origin || allowedOrigins.includes(origin) || /\.vercel\.app$/.test(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("No permitido por CORS"));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+// Middleware de CORS optimizado
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, origin); // Devolver origen específico en vez de `true`
+    } else {
+      callback(new Error("No permitido por CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
-// NO PONER app.options("*", cors()); ← esa línea causaba conflicto
+// Middleware para manejar preflight requests (OPTIONS)
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.method === "OPTIONS") {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 
 // Middleware para parsear JSON
 app.use(express.json());
 
 // Rutas
-app.use('/api/admin', adminRouter);
-app.use('/api/appointments', appointmentRouter);
+app.use('/admin', adminRouter);
+app.use('/appointments', appointmentRouter);
 
-// Puerto del servidor
-const PORT = process.env.PORT || 3001;
+// Ruta raíz para verificar que el backend está funcionando
+app.get('/', (req: Request, res: Response) => {
+  res.send('🚀 Servidor funcionando correctamente en Railway ✔️');
+});
+
+const PORT = process.env.PORT || 5432;
 
 app.listen(PORT, () => {
-  console.log(`✅ Servidor corriendo en http://localhost:${PORT} o en Railway`);
+  console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
 });
+
+
+// Exportar app si Railway lo requiere
+export default app;
