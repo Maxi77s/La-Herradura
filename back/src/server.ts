@@ -49,11 +49,16 @@ app.get('/', (req: Request, res: Response) => {
   res.send('🚀 Servidor funcionando correctamente en Railway ✔️');
 });
 
-const PORT = process.env.PORT || 5432;
+if (!process.env.DATABASE_PUBLIC_URL) {
+  throw new Error("Falta DATABASE_PUBLIC_URL en .env o Railway Variables");
+}
+
+const PORT = Number(process.env.PORT) || 3001;
 
 app.listen(PORT, () => {
-  console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`✅ Servidor corriendo en http://localhost:${PORT} o en Railway`);
 });
+
 
 
 // Exportar app si Railway lo requiere

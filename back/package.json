@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "tsc",
+   "build": "tsc && prisma generate",
     "start": "node dist/server.js",
     "postinstall": "npm run build"
   },
@@ -22,7 +22,6 @@
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.13.1",
     "prisma": "^6.3.0",
-    "psql": "^0.0.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.3",
     "undici-types": "^6.19.8"
