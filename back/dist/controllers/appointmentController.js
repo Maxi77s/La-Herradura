@@ -1,24 +1,15 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppointmentController = void 0;
 const appointmentService_1 = require("../services/appointmentService");
 exports.AppointmentController = {
-    createAppointment: ((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    createAppointment: (async (req, res) => {
         try {
             const { date, time, status, description, clientName } = req.body;
             if (!date || !time || !status || !description || !clientName) {
                 return res.status(400).json({ message: 'Todos los campos son obligatorios' });
             }
-            const appointment = yield appointmentService_1.AppointmentService.createAppointment({
+            const appointment = await appointmentService_1.AppointmentService.createAppointment({
                 date,
                 time,
                 status,
@@ -31,10 +22,10 @@ exports.AppointmentController = {
             console.error('Error al crear cita:', error);
             res.status(400).json({ message: error.message });
         }
-    })), // ✅ Se asegura de que sea del tipo correcto
-    getAppointments: ((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    }), // ✅ Se asegura de que sea del tipo correcto
+    getAppointments: (async (req, res) => {
         try {
-            const appointments = yield appointmentService_1.AppointmentService.getAppointments();
+            const appointments = await appointmentService_1.AppointmentService.getAppointments();
             if (!appointments || appointments.length === 0) {
                 return res.status(404).json({ message: 'No hay citas disponibles' });
             }
@@ -44,8 +35,8 @@ exports.AppointmentController = {
             console.error('Error al obtener citas:', error);
             res.status(500).json({ message: `Error al obtener citas: ${error.message}` });
         }
-    })), // ✅ Tipo correcto para Express
-    updateAppointmentStatus: ((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    }), // ✅ Tipo correcto para Express
+    updateAppointmentStatus: (async (req, res) => {
         const { id } = req.params;
         const { status } = req.body; // Estado nuevo que se enviará desde el frontend
         try {
@@ -54,7 +45,7 @@ exports.AppointmentController = {
             if (isNaN(appointmentId)) {
                 return res.status(400).json({ message: 'ID inválido' });
             }
-            const updatedAppointment = yield appointmentService_1.AppointmentService.updateAppointmentStatus(appointmentId, status);
+            const updatedAppointment = await appointmentService_1.AppointmentService.updateAppointmentStatus(appointmentId, status);
             if (!updatedAppointment) {
                 return res.status(404).json({ message: 'Cita no encontrada' });
             }
@@ -63,8 +54,8 @@ exports.AppointmentController = {
         catch (error) {
             res.status(500).json({ message: `Error al actualizar la cita: ${error.message}` });
         }
-    })), // 🔥 Asegura que tenga el tipo correcto
-    getAppointmentById: ((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    }), // 🔥 Asegura que tenga el tipo correcto
+    getAppointmentById: (async (req, res) => {
         console.log('ID recibido:', req.params.id);
         const { id } = req.params;
         try {
@@ -72,7 +63,7 @@ exports.AppointmentController = {
             if (isNaN(id)) {
                 return res.status(400).json({ message: 'ID inválido' });
             }
-            const appointment = yield appointmentService_1.AppointmentService.getAppointmentById(id);
+            const appointment = await appointmentService_1.AppointmentService.getAppointmentById(id);
             if (!appointment) {
                 return res.status(404).json({ message: 'Cita no encontrada' });
             }
@@ -82,5 +73,5 @@ exports.AppointmentController = {
             console.error(`Error al obtener cita con ID ${req.params.id}:`, error);
             res.status(500).json({ message: `Error al obtener la cita: ${error.message}` });
         }
-    })), // ✅ Se asegura de que tenga el tipo correcto
+    }), // ✅ Se asegura de que tenga el tipo correcto
 };
