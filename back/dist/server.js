@@ -42,8 +42,8 @@ app.use((req, res, next) => {
 // Middleware para parsear JSON
 app.use(express_1.default.json());
 // Rutas
-app.use('/admin', adminRouter_1.default);
-app.use('/appointments', appointmentRouter_1.default);
+app.use('/api/admin', adminRouter_1.default);
+app.use('/api/admin/appointments', appointmentRouter_1.default);
 // Ruta raíz para verificar si el backend está vivo
 app.get('/', (req, res) => {
     res.send('🚀 Backend funcionando correctamente en Render ✔️');
