@@ -43,7 +43,7 @@ app.use(express.json());
 
 // Rutas
 app.use('/api/admin', adminRouter);
-app.use('/api/admin/appointments', appointmentRouter);
+app.use('/appointments', appointmentRouter);
 
 // Ruta raíz para verificar si el backend está vivo
 app.get('/', (req: Request, res: Response) => {
