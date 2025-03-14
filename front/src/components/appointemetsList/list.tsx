@@ -42,7 +42,7 @@ const AppointmentsList: React.FC = () => {
       if (!token) return;
 
       try {
-        const response = await fetch(`${API_URL}/appointments`, {
+        const response = await fetch(`${API_URL}/api/appointments`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -73,7 +73,7 @@ const AppointmentsList: React.FC = () => {
     if (!token) return;
 
     try {
-      const response = await fetch(`${API_URL}/appointments/${id}`, {
+      const response = await fetch(`${API_URL}/api/appointments/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
