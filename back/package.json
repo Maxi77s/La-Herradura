@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "main": "dist/server.js",
 "scripts": {
-  "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+  "dev": "npx ts-node src/script/updatePasswords.ts && ts-node-dev --respawn --transpile-only src/server.ts",
   "build": "tsc && prisma generate",
-  "start": "node dist/server.js",
+  "start": "npx ts-node src/script/updatePasswords.ts && node dist/server.js",
   "postinstall": "npm run build"
 },
+
   "keywords": [],
   "author": "",
   "license": "ISC",
