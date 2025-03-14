@@ -32,11 +32,11 @@ export const AdminController = {
 
       // ✅ Generar el token en el backend
       const token = jwt.sign(
-        { id: admin.user.id, 
-          username: admin.user.username, 
-          exp: Math.floor(Date.now() / 1000) + (60 * 60) },
-        process.env.JWT_SECRET as string
+        { id: admin.user.id, username: admin.user.username },
+        process.env.JWT_SECRET as string,
+        { expiresIn: '1h' } // Esto ya maneja la expiración
       );
+      
       return res.status(200).json({ token });
     } catch (error: any) {
       console.error("Error en login:", error.message);

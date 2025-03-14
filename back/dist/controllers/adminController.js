@@ -32,9 +32,8 @@ exports.AdminController = {
                 return res.status(401).json({ message: "Usuario o contraseña incorrectos" });
             }
             // ✅ Generar el token en el backend
-            const token = jsonwebtoken_1.default.sign({ id: admin.user.id,
-                username: admin.user.username,
-                exp: Math.floor(Date.now() / 1000) + (60 * 60) }, process.env.JWT_SECRET);
+            const token = jsonwebtoken_1.default.sign({ id: admin.user.id, username: admin.user.username }, process.env.JWT_SECRET, { expiresIn: '1h' } // Esto ya maneja la expiración
+            );
             return res.status(200).json({ token });
         }
         catch (error) {
